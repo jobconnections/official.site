@@ -19,6 +19,7 @@ const t = {
     webButton: 'フォームでお問い合わせ',
     margin: 'マージン率等に関する情報提供',
     privacy: 'プライバシーポリシー',
+    jobs: '求人一覧',
   },
   en: {
     heading: 'Struggling with Staffing Shortages?',
@@ -29,6 +30,7 @@ const t = {
     webButton: 'Contact by Form',
     margin: 'Information on Margin Rates, etc.',
     privacy: 'Privacy Policy',
+    jobs: 'Jobs',
   },
   'pt-br': {
     heading: 'Problemas com Falta de Pessoal?',
@@ -39,6 +41,7 @@ const t = {
     webButton: 'Contato por Formulário',
     margin: 'Informações sobre Taxas de Margem, etc.',
     privacy: 'Política de Privacidade',
+    jobs: 'Vagas',
   }
 };
 
@@ -77,6 +80,9 @@ const currentT = t[lang];
                 target="_blank"
                 class="hover:text-white transition flex items-center gap-1">
                 <i class="fa-solid fa-file-pdf opacity-70"></i> {currentT.margin}
+            </a>
+            <a href={`${basePath}/jobs/`} class="hover:text-white transition flex items-center gap-1">
+                <i class="fa-solid fa-briefcase opacity-70"></i> {currentT.jobs}
             </a>
             <a href={`${basePath}/privacy/`} class="hover:text-white transition">
                 <i class="fa-solid fa-file-text opacity-70"></i> {currentT.privacy}

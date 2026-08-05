@@ -18,6 +18,7 @@ const t = {
     faq: 'よくある質問',
     company: '会社概要',
     contact: 'お問い合わせ',
+    jobs: '求人一覧',
   },
   en: {
     concept: 'Why Choose Us',
@@ -27,6 +28,7 @@ const t = {
     faq: 'FAQ',
     company: 'Company',
     contact: 'Contact',
+    jobs: 'Jobs',
   },
   'pt-br': {
     concept: 'Por que nós',
@@ -36,6 +38,7 @@ const t = {
     faq: 'FAQ',
     company: 'Empresa',
     contact: 'Contato',
+    jobs: 'Vagas',
   }
 };
 
@@ -71,6 +74,7 @@ const getLangUrl = (targetLang: string) => {
             <a href={`${basePath}/#flow`} class="text-gray-600 hover:text-primary transition">{currentT.flow}</a>
             <a href={`${basePath}/#faq`} class="text-gray-600 hover:text-primary transition">{currentT.faq}</a>
             <a href={`${basePath}/#company`} class="text-gray-600 hover:text-primary transition">{currentT.company}</a>
+            <a href={`${basePath}/jobs/`} class="text-primary hover:text-secondary transition font-bold border-b-2 border-primary pb-1">{currentT.jobs}</a>
             
             <!-- 言語切替 -->
             <div class="relative group ml-4 pl-4 border-l border-gray-200">
@@ -119,6 +123,7 @@ const getLangUrl = (targetLang: string) => {
             <a href={`${basePath}/#flow`} class="mobile-link text-gray-800 hover:text-primary font-bold py-3 border-b border-gray-100">{currentT.flow}</a>
             <a href={`${basePath}/#faq`} class="mobile-link text-gray-800 hover:text-primary font-bold py-3 border-b border-gray-100">{currentT.faq}</a>
             <a href={`${basePath}/#company`} class="mobile-link text-gray-800 hover:text-primary font-bold py-3 border-b border-gray-100">{currentT.company}</a>
+            <a href={`${basePath}/jobs/`} class="mobile-link text-primary hover:text-secondary font-bold py-3 border-b border-gray-100">{currentT.jobs}</a>
             <a href={`${basePath}/#contact-form`} class="mobile-link text-center bg-primary text-white px-6 py-3 rounded-md font-bold transition shadow-sm mt-4">
                 <i class="fa-regular fa-envelope mr-1"></i> {currentT.contact}
             </a>
