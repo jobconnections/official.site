@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JobFilter from '../../components/JobFilter.astro';
+import JobCard from '../../components/JobCard.astro';
+import { getCollection } from 'astro:content';
+
+// 日本語の求人のみ取得（URLが "XXX/ja" で終わるものを抽出する簡易実装）
+// ※ Astro Content Collections で i18n structure: multiple_folders の場合
+// slug は "JOB.../ja" のようになります。
+const allJobs = await getCollection('jobs', (entry) => {
+  return entry.id.endsWith('/ja') && entry.data.status === 'published';
+});
+
+// 最終更新日（掲載日）の新しい順にソート
+const sortedJobs = allJobs.sort((a, b) => b.data.datePosted.valueOf() - a.data.datePosted.valueOf());
+---
+
+<BaseLayout title="求人一覧 | JOB CONNECTIONS株式会社" description="JOB CONNECTIONS株式会社の最新の求人情報一覧です。">
+    <div class="bg-primary text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl font-bold mb-2">求人一覧</h1>
+            <p class="text-blue-200 text-sm uppercase tracking-widest">Jobs</p>
+        </div>
+    </div>
+
+    <div class="py-12 md:py-20 bg-gray-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <JobFilter lang="ja" />
+
+            <div class="grid grid-cols-1 gap-6">
+                {sortedJobs.length === 0 ? (
+                    <div class="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
+                        <p class="text-gray-500">現在募集中の求人はありません。</p>
+                    </div>
+                ) : (
+                    sortedJobs.map(job => (
+                        <div class="job-card-item" 
+                             data-location={job.data.location.prefecture + ' ' + job.data.location.city}
+                             data-salary-type={job.data.salary.type}
+                             data-salary-max={job.data.salary.max}
+                             data-japanese={job.data.japaneseLevel}>
+                            <JobCard job={job} lang="ja" />
+                        </div>
+                    ))
+                )}
+            </div>
+        </div>
+    </div>
+</BaseLayout>

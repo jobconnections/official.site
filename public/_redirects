@@ -1,0 +1,5 @@
+# Language-based redirection
+/  /en/  302  Language=en
+/  /pt-br/  302  Language=pt
+
+# Fallback (Astro will handle / with index.html)

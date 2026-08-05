@@ -1,0 +1,167 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const jobs = await getCollection('jobs', (entry) => {
+    return entry.id.endsWith('/ja') && entry.data.status === 'published';
+  });
+  
+  return jobs.map(job => {
+    const slug = job.id.split('/')[0]; // "JOB20260806000000" を抽出
+    return {
+      params: { slug },
+      props: { job },
+    };
+  });
+}
+
+const { job } = Astro.props;
+const { Content } = await render(job);
+
+const siteUrl = 'https://www.jobconnections.jp';
+const currentUrl = new URL(Astro.url.pathname, siteUrl).toString();
+
+// 日付フォーマット用関数 (YYYY-MM-DD)
+const formatDateISO = (date: Date) => {
+  const d = new Date(date);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+// Google Job Search JSON-LD の生成
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "JobPosting",
+  "title": job.data.title,
+  "datePosted": formatDateISO(job.data.datePosted),
+  ...(job.data.validThrough && { "validThrough": formatDateISO(job.data.validThrough) }),
+  "employmentType": job.data.employmentType === '正社員' ? 'FULL_TIME' :
+                    job.data.employmentType === '契約社員' ? 'CONTRACTOR' :
+                    job.data.employmentType === 'アルバイト' ? 'PART_TIME' : 'OTHER',
+  "hiringOrganization": {
+    "@type": "Organization",
+    "name": "JOB CONNECTIONS株式会社",
+    "sameAs": siteUrl
+  },
+  "jobLocation": {
+    "@type": "Place",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": job.data.location.city,
+      "addressRegion": job.data.location.prefecture,
+      "addressCountry": "JP"
+    }
+  },
+  "baseSalary": {
+    "@type": "MonetaryAmount",
+    "currency": "JPY",
+    "value": {
+      "@type": "QuantitativeValue",
+      "minValue": job.data.salary.min,
+      "maxValue": job.data.salary.max,
+      "unitText": job.data.salary.type === '時給' ? 'HOUR' :
+                  job.data.salary.type === '日給' ? 'DAY' : 'MONTH'
+    }
+  },
+  "inLanguage": "ja"
+};
+
+// お問い合わせ先プレースホルダー（運用時に変更）
+const whatsappUrl = 'https://wa.me/819000000000'; // FIXME
+const lineUrl = 'https://line.me/R/ti/p/@placeholder'; // FIXME
+const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
+---
+
+<BaseLayout 
+  title={`${job.data.title} | 求人詳細 | JOB CONNECTIONS株式会社`} 
+  description={`${job.data.location.prefecture}${job.data.location.city}での${job.data.title}の求人情報です。`}
+  ogImage={job.data.image}
+>
+    <!-- JSON-LD を head に挿入 -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+
+    <div class="bg-gray-50 py-12 md:py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- 戻るリンク -->
+            <a href="/jobs/" class="inline-flex items-center text-gray-500 hover:text-primary transition mb-8 text-sm font-medium">
+                <i class="fa-solid fa-arrow-left mr-2"></i> 求人一覧へ戻る
+            </a>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                {job.data.image && (
+                    <div class="w-full h-64 md:h-80 bg-gray-200">
+                        <img src={job.data.image} alt={job.data.title} class="w-full h-full object-cover" />
+                    </div>
+                )}
+                
+                <div class="p-6 md:p-10">
+                    <div class="mb-8">
+                        <span class="inline-block px-3 py-1 bg-blue-50 text-primary text-xs font-bold rounded-full mb-3">
+                            {job.data.employmentType}
+                        </span>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">{job.data.title}</h1>
+                        <p class="text-sm text-gray-500 flex items-center gap-2">
+                            <i class="fa-regular fa-clock"></i> 掲載日: {formatDateISO(job.data.datePosted)}
+                        </p>
+                    </div>
+
+                    <!-- 募集条件ハイライト -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 p-6 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-location-dot w-6 text-primary mt-1 text-lg"></i>
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 mb-1">勤務地</p>
+                                <p class="text-gray-900 font-medium">{job.data.location.prefecture} {job.data.location.city}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-yen-sign w-6 text-primary mt-1 text-lg"></i>
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 mb-1">給与</p>
+                                <p class="text-gray-900 font-medium">{job.data.salary.type} {job.data.salary.min.toLocaleString()}〜{job.data.salary.max.toLocaleString()}円</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-language w-6 text-primary mt-1 text-lg"></i>
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 mb-1">日本語能力</p>
+                                <p class="text-gray-900 font-medium">{job.data.japaneseLevel}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Markdown 本文 -->
+                    <div class="prose prose-blue max-w-none prose-headings:font-bold prose-a:text-primary">
+                        <Content />
+                    </div>
+
+                    <div class="mt-12 pt-8 border-t border-gray-100">
+                        <h3 class="text-center font-bold text-gray-900 mb-6">この求人に応募・問い合わせる</h3>
+                        
+                        <div class="flex flex-col gap-4 max-w-sm mx-auto">
+                            <!-- 応募フォーム -->
+                            <a href="/apply/" class="w-full bg-primary hover:bg-blue-800 text-white text-center py-4 rounded-full font-bold shadow-md transition flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i> フォームから応募する
+                            </a>
+                            
+                            <!-- WhatsApp -->
+                            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white text-center py-3 rounded-full font-bold shadow-sm transition flex justify-center items-center gap-2">
+                                <i class="fa-brands fa-whatsapp text-xl"></i> WhatsApp で連絡する
+                            </a>
+                            
+                            <!-- LINE -->
+                            <a href={lineUrl} target="_blank" rel="noopener noreferrer" class="w-full bg-[#06C755] hover:bg-[#05B34C] text-white text-center py-3 rounded-full font-bold shadow-sm transition flex justify-center items-center gap-2">
+                                <i class="fa-brands fa-line text-xl"></i> LINE で連絡する
+                            </a>
+                            
+                            <!-- Email -->
+                            <a href={emailUrl} class="w-full bg-gray-600 hover:bg-gray-700 text-white text-center py-3 rounded-full font-bold shadow-sm transition flex justify-center items-center gap-2">
+                                <i class="fa-regular fa-envelope text-xl"></i> メールで連絡する
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</BaseLayout>

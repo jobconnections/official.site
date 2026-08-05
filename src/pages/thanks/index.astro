@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="送信完了 | JOB CONNECTIONS株式会社" description="お問い合わせ・ご応募の送信が完了しました。">
+    <div class="bg-primary text-white py-12">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl font-bold mb-2">送信完了</h1>
+            <p class="text-blue-200 text-sm uppercase tracking-widest">Thank You</p>
+        </div>
+    </div>
+
+    <div class="py-16 md:py-24 bg-gray-50 flex-grow flex items-center justify-center">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="bg-white rounded-2xl shadow-sm p-8 md:p-12 border border-gray-100 text-center">
+                <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">送信が完了しました</h2>
+                <p class="text-gray-600 leading-relaxed mb-8">
+                    ご応募・お問い合わせいただき、誠にありがとうございます。<br>
+                    内容を確認の上、担当者より通常1〜3営業日以内にご連絡いたします。<br>
+                    ※自動返信メールはお送りしておりません。あらかじめご了承ください。
+                </p>
+                <a href="/" class="inline-flex items-center text-primary font-bold hover:text-blue-800 transition">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> トップページへ戻る
+                </a>
+            </div>
+        </div>
+    </div>
+</BaseLayout>

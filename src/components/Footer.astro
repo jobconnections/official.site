@@ -1,0 +1,86 @@
+---
+interface Props {
+  lang: 'ja' | 'en' | 'pt-br';
+}
+
+const { lang } = Astro.props;
+
+// 言語別のベースパス
+const basePath = lang === 'ja' ? '' : `/${lang}`;
+
+// 翻訳データ（シンプルに）
+const t = {
+  ja: {
+    heading: '現場の人材不足・定着率にお悩みなら',
+    desc: 'まずはお気軽にご相談ください。貴社の課題に合わせた最適な人材ソリューションをご提案いたします。',
+    phoneTitle: 'お電話でのご相談',
+    phoneTime: '受付時間：平日 9:00〜18:00',
+    webTitle: 'ウェブからの無料相談',
+    webButton: 'フォームでお問い合わせ',
+    margin: 'マージン率等に関する情報提供',
+    privacy: 'プライバシーポリシー',
+  },
+  en: {
+    heading: 'Struggling with Staffing Shortages?',
+    desc: 'Please feel free to contact us. We will propose the optimal human resource solution tailored to your issues.',
+    phoneTitle: 'Consultation by Phone',
+    phoneTime: 'Reception Hours: Weekdays 9:00 - 18:00',
+    webTitle: 'Free Web Consultation',
+    webButton: 'Contact by Form',
+    margin: 'Information on Margin Rates, etc.',
+    privacy: 'Privacy Policy',
+  },
+  'pt-br': {
+    heading: 'Problemas com Falta de Pessoal?',
+    desc: 'Sinta-se à vontade para nos contatar. Proporemos a solução ideal de recursos humanos adaptada aos seus problemas.',
+    phoneTitle: 'Consulta por Telefone',
+    phoneTime: 'Horário de Atendimento: Dias úteis 9:00 - 18:00',
+    webTitle: 'Consulta Gratuita pela Web',
+    webButton: 'Contato por Formulário',
+    margin: 'Informações sobre Taxas de Margem, etc.',
+    privacy: 'Política de Privacidade',
+  }
+};
+
+const currentT = t[lang];
+---
+
+<footer class="bg-gray-900 text-white pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 border-b border-gray-800 pb-12">
+        <h2 class="text-2xl md:text-3xl font-bold mb-4">{currentT.heading}</h2>
+        <p class="text-gray-400 mb-8 max-w-2xl mx-auto">
+            {currentT.desc}
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-6">
+            <div class="bg-gray-800 rounded-lg p-6 flex flex-col items-center w-full sm:w-1/2 max-w-sm mx-auto sm:mx-0">
+                <span class="text-sm text-gray-400 mb-2">{currentT.phoneTitle}</span>
+                <a href="tel:0593275215" class="text-3xl font-bold text-white hover:text-secondary transition">
+                    <i class="fa-solid fa-phone text-secondary mr-2 text-2xl"></i>059-327-5215
+                </a>
+                <span class="text-xs text-gray-500 mt-2">{currentT.phoneTime}</span>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6 flex flex-col items-center justify-center w-full sm:w-1/2 max-w-sm mx-auto sm:mx-0">
+                <span class="text-sm text-gray-400 mb-2">{currentT.webTitle}</span>
+                <a href={`${basePath}/#contact-form`} class="bg-secondary hover:bg-blue-600 text-white px-8 py-3 rounded-full font-bold transition shadow-lg flex items-center gap-2">
+                    <i class="fa-regular fa-envelope"></i> {currentT.webButton}
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 gap-4">
+        <div>
+            &copy; 2026 JOB CONNECTIONS Co., Ltd. All Rights Reserved.
+        </div>
+        <div class="flex flex-wrap gap-4 md:justify-end">
+            <a href="https://raw.githubusercontent.com/jobconnections/jobconnections.github.io/4a00fde6366464e8322b58e88e0015d2400a7e7c/assets/pdf/2024年度：マージン率等の情報提供について：JOB CONNECTIONS（株）.pdf"
+                target="_blank"
+                class="hover:text-white transition flex items-center gap-1">
+                <i class="fa-solid fa-file-pdf opacity-70"></i> {currentT.margin}
+            </a>
+            <a href={`${basePath}/privacy/`} class="hover:text-white transition">
+                <i class="fa-solid fa-file-text opacity-70"></i> {currentT.privacy}
+            </a>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="求人応募 | JOB CONNECTIONS株式会社" description="JOB CONNECTIONS株式会社の求人への応募フォームです。">
+    <div class="bg-primary text-white py-12">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl font-bold mb-2">求人応募</h1>
+            <p class="text-blue-200 text-sm uppercase tracking-widest">Apply for a Job</p>
+        </div>
+    </div>
+
+    <div class="py-12 md:py-20 bg-gray-50">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-2xl shadow-sm p-6 md:p-12 border border-gray-100">
+                <p class="mb-8 text-gray-600 text-center text-sm md:text-base">
+                    以下のフォームに必要事項をご記入の上、送信してください。<br>
+                    担当者より通常1〜3営業日以内にご連絡いたします。
+                </p>
+
+                <!-- Netlify Forms -->
+                <form name="job-application" method="POST" action="/thanks/" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" class="space-y-6">
+                    <input type="hidden" name="form-name" value="job-application" />
+                    <!-- スパム対策用隠しフィールド -->
+                    <p class="hidden">
+                        <label>Don’t fill this out if you're human: <input name="bot-field" /></label>
+                    </p>
+
+                    <div>
+                        <label for="name" class="block text-sm font-bold text-gray-700 mb-1">お名前 <span class="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded ml-2">必須</span></label>
+                        <input type="text" id="name" name="name" required class="w-full border border-gray-300 rounded-md px-4 py-3 focus:ring-primary focus:border-primary" placeholder="例: 鈴木 太郎" />
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="email" class="block text-sm font-bold text-gray-700 mb-1">メールアドレス <span class="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded ml-2">必須</span></label>
+                            <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded-md px-4 py-3 focus:ring-primary focus:border-primary" placeholder="例: info@example.com" />
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-bold text-gray-700 mb-1">電話番号 <span class="text-xs text-gray-500 font-normal ml-2">任意</span></label>
+                            <input type="tel" id="phone" name="phone" class="w-full border border-gray-300 rounded-md px-4 py-3 focus:ring-primary focus:border-primary" placeholder="例: 090-0000-0000" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="resume" class="block text-sm font-bold text-gray-700 mb-1">履歴書・職務経歴書 <span class="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded ml-2">必須</span></label>
+                        <p class="text-xs text-gray-500 mb-2">※PDF、Word、Excel形式等（上限10MB）</p>
+                        <input type="file" id="resume" name="resume" required class="w-full border border-gray-300 rounded-md px-4 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100" />
+                    </div>
+
+                    <div>
+                        <label for="message" class="block text-sm font-bold text-gray-700 mb-1">志望動機・メッセージ <span class="text-xs text-gray-500 font-normal ml-2">任意</span></label>
+                        <textarea id="message" name="message" rows="5" class="w-full border border-gray-300 rounded-md px-4 py-3 focus:ring-primary focus:border-primary" placeholder="ご質問や希望条件などがあればご記入ください"></textarea>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-100">
+                        <button type="submit" class="w-full md:w-auto md:px-12 bg-primary hover:bg-blue-800 text-white py-4 rounded-full font-bold shadow-md transition flex justify-center items-center gap-2 mx-auto">
+                            <i class="fa-regular fa-paper-plane"></i> 応募を送信する
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</BaseLayout>

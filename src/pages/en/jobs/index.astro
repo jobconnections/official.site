@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import JobFilter from '../../../components/JobFilter.astro';
+import JobCard from '../../../components/JobCard.astro';
+import { getCollection } from 'astro:content';
+
+const allJobs = await getCollection('jobs', (entry) => {
+  return entry.id.endsWith('/en') && entry.data.status === 'published';
+});
+
+const sortedJobs = allJobs.sort((a, b) => b.data.datePosted.valueOf() - a.data.datePosted.valueOf());
+---
+
+<BaseLayout title="Jobs | JOB CONNECTIONS Co., Ltd." description="Latest job openings at JOB CONNECTIONS Co., Ltd." lang="en">
+    <div class="bg-primary text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl font-bold mb-2">Job Openings</h1>
+            <p class="text-blue-200 text-sm uppercase tracking-widest">Jobs</p>
+        </div>
+    </div>
+
+    <div class="py-12 md:py-20 bg-gray-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <JobFilter lang="en" />
+
+            <div class="grid grid-cols-1 gap-6">
+                {sortedJobs.length === 0 ? (
+                    <div class="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
+                        <p class="text-gray-500">No job openings at the moment.</p>
+                    </div>
+                ) : (
+                    sortedJobs.map(job => (
+                        <div class="job-card-item" 
+                             data-location={job.data.location.prefecture + ' ' + job.data.location.city}
+                             data-salary-type={job.data.salary.type}
+                             data-salary-max={job.data.salary.max}
+                             data-japanese={job.data.japaneseLevel}>
+                            <JobCard job={job} lang="en" />
+                        </div>
+                    ))
+                )}
+            </div>
+        </div>
+    </div>
+</BaseLayout>

@@ -1,0 +1,127 @@
+---
+interface Props {
+  lang: 'ja' | 'en' | 'pt-br';
+}
+
+const { lang } = Astro.props;
+
+// 言語別のベースパス
+const basePath = lang === 'ja' ? '' : `/${lang}`;
+
+// 翻訳データ（シンプルに）
+const t = {
+  ja: {
+    concept: '選ばれる理由',
+    services: '対応業務',
+    trials: '私たちの体制',
+    flow: '導入の流れ',
+    faq: 'よくある質問',
+    company: '会社概要',
+    contact: 'お問い合わせ',
+  },
+  en: {
+    concept: 'Why Choose Us',
+    services: 'Services',
+    trials: 'Our System',
+    flow: 'Flow',
+    faq: 'FAQ',
+    company: 'Company',
+    contact: 'Contact',
+  },
+  'pt-br': {
+    concept: 'Por que nós',
+    services: 'Serviços',
+    trials: 'Nosso Sistema',
+    flow: 'Fluxo',
+    faq: 'FAQ',
+    company: 'Empresa',
+    contact: 'Contato',
+  }
+};
+
+const currentT = t[lang];
+
+// 現在のパスから他の言語のURLを生成する関数（単純化）
+const currentPath = Astro.url.pathname;
+const getLangUrl = (targetLang: string) => {
+  // パスの先頭の言語コードを置換
+  let pathWithoutLang = currentPath;
+  if (currentPath.startsWith('/en/')) pathWithoutLang = currentPath.replace('/en/', '/');
+  else if (currentPath.startsWith('/pt-br/')) pathWithoutLang = currentPath.replace('/pt-br/', '/');
+  
+  if (targetLang === 'ja') return pathWithoutLang;
+  return `/${targetLang}${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
+};
+---
+
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
+        <div class="flex items-center">
+            <!-- ロゴ画像 -->
+            <a href={`${basePath}/#home`} class="hover:opacity-80 transition flex items-center">
+                <img src="/assets/img/logo.avif" alt="JOB CONNECTIONS" class="h-10 w-auto" width="160" height="40">
+            </a>
+        </div>
+        
+        <!-- PC用 ナビゲーションメニュー -->
+        <nav class="hidden lg:flex items-center space-x-6 text-sm font-medium">
+            <a href={`${basePath}/#concept`} class="text-gray-600 hover:text-primary transition">{currentT.concept}</a>
+            <a href={`${basePath}/#services`} class="text-gray-600 hover:text-primary transition">{currentT.services}</a>
+            <a href={`${basePath}/#trials`} class="text-gray-600 hover:text-primary transition">{currentT.trials}</a>
+            <a href={`${basePath}/#flow`} class="text-gray-600 hover:text-primary transition">{currentT.flow}</a>
+            <a href={`${basePath}/#faq`} class="text-gray-600 hover:text-primary transition">{currentT.faq}</a>
+            <a href={`${basePath}/#company`} class="text-gray-600 hover:text-primary transition">{currentT.company}</a>
+            
+            <!-- 言語切替 -->
+            <div class="relative group ml-4 pl-4 border-l border-gray-200">
+                <button class="flex items-center space-x-1 text-gray-600 hover:text-primary transition">
+                    <i class="fa-solid fa-globe"></i>
+                    <span class="uppercase">{lang}</span>
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </button>
+                <div class="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <a href={getLangUrl('ja')} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">日本語</a>
+                    <a href={getLangUrl('en')} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">English</a>
+                    <a href={getLangUrl('pt-br')} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary">Português</a>
+                </div>
+            </div>
+
+            <div class="ml-4">
+                <a href={`${basePath}/#contact-form`} class="bg-primary hover:bg-blue-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition shadow-md flex items-center gap-2">
+                    <i class="fa-regular fa-envelope"></i> {currentT.contact}
+                </a>
+            </div>
+        </nav>
+        
+        <!-- スマホ用 ハンバーガーボタン -->
+        <div class="lg:hidden flex items-center space-x-4">
+            <!-- スマホ言語切替（簡易） -->
+            <div class="flex space-x-2 text-xs font-bold text-gray-500">
+                <a href={getLangUrl('ja')} class={lang === 'ja' ? 'text-primary' : ''}>JP</a>
+                <span>|</span>
+                <a href={getLangUrl('en')} class={lang === 'en' ? 'text-primary' : ''}>EN</a>
+                <span>|</span>
+                <a href={getLangUrl('pt-br')} class={lang === 'pt-br' ? 'text-primary' : ''}>PT</a>
+            </div>
+            
+            <button id="mobile-menu-button" class="text-gray-600 hover:text-primary focus:outline-none p-2" aria-label="Menu">
+                <i class="fa-solid fa-bars text-2xl w-6 text-center"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- スマホ用 ドロップダウンメニュー -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-gray-100 absolute w-full left-0 shadow-lg z-40">
+        <nav class="flex flex-col px-6 py-4 space-y-2 pb-6">
+            <a href={`${basePath}/#concept`} class="mobile-link text-gray-800 hover:text-primary font-bold py-3 border-b border-gray-100">{currentT.concept}</a>
+            <a href={`${basePath}/#services`} class="mobile-link text-gray-800 hover:text-primary font-bold py-3 border-b border-gray-100">{currentT.services}</a>
+            <a href={`${basePath}/#trials`} class="mobile-link text-gray-800 hover:text-primary font-bold py-3 border-b border-gray-100">{currentT.trials}</a>
+            <a href={`${basePath}/#flow`} class="mobile-link text-gray-800 hover:text-primary font-bold py-3 border-b border-gray-100">{currentT.flow}</a>
+            <a href={`${basePath}/#faq`} class="mobile-link text-gray-800 hover:text-primary font-bold py-3 border-b border-gray-100">{currentT.faq}</a>
+            <a href={`${basePath}/#company`} class="mobile-link text-gray-800 hover:text-primary font-bold py-3 border-b border-gray-100">{currentT.company}</a>
+            <a href={`${basePath}/#contact-form`} class="mobile-link text-center bg-primary text-white px-6 py-3 rounded-md font-bold transition shadow-sm mt-4">
+                <i class="fa-regular fa-envelope mr-1"></i> {currentT.contact}
+            </a>
+        </nav>
+    </div>
+</header>

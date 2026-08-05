@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.hero-pattern {
+    background-color: #185B9D;
+    background-image: linear-gradient(135deg, rgba(24, 91, 157, 0.9) 0%, rgba(54, 136, 200, 0.8) 100%), url('/assets/img/hero-section-background.avif');
+    background-size: cover;
+    background-position: center;
+}
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: #3688C8;
+    margin: 16px auto 0;
+    border-radius: 2px;
+}
+html { scroll-behavior: smooth; }
+
+/* FAQアコーディオン用マーカー非表示 */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }

@@ -1,0 +1,149 @@
+---
+interface Props {
+  lang: 'ja' | 'en' | 'pt-br';
+}
+
+const { lang } = Astro.props;
+
+const t = {
+  ja: {
+    filter: '条件で絞り込む',
+    location: '勤務地',
+    salaryType: '給与種別',
+    salaryTypeOptions: ['指定なし', '時給', '日給', '月給'],
+    salaryRange: '給与額 (〜円)',
+    japaneseLevel: '日本語能力',
+    japaneseLevelOptions: ['指定なし', '不問', 'N4以上', 'N3以上', 'N2以上', 'N1以上'],
+    applyFilter: '検索する',
+    clearFilter: 'クリア',
+  },
+  en: {
+    filter: 'Filter Jobs',
+    location: 'Location',
+    salaryType: 'Salary Type',
+    salaryTypeOptions: ['Any', 'Hourly', 'Daily', 'Monthly'],
+    salaryRange: 'Salary Range (~JPY)',
+    japaneseLevel: 'Japanese Level',
+    japaneseLevelOptions: ['Any', 'Not Required', 'N4+', 'N3+', 'N2+', 'N1+'],
+    applyFilter: 'Search',
+    clearFilter: 'Clear',
+  },
+  'pt-br': {
+    filter: 'Filtrar Vagas',
+    location: 'Local',
+    salaryType: 'Tipo de Salário',
+    salaryTypeOptions: ['Qualquer', 'Por Hora', 'Diário', 'Mensal'],
+    salaryRange: 'Faixa Salarial (~JPY)',
+    japaneseLevel: 'Nível de Japonês',
+    japaneseLevelOptions: ['Qualquer', 'Não exigido', 'N4+', 'N3+', 'N2+', 'N1+'],
+    applyFilter: 'Buscar',
+    clearFilter: 'Limpar',
+  }
+};
+const currentT = t[lang];
+
+// 実際のアプリではデータからユニークな勤務地を抽出しますが、ここでは簡易な入力とします
+---
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+    <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
+        <i class="fa-solid fa-filter text-primary"></i> {currentT.filter}
+    </h3>
+    <form id="job-filter-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- 勤務地 -->
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.location}</label>
+            <input type="text" id="filter-location" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary" placeholder={lang === 'ja' ? '例: 四日市市' : 'Yokkaichi'} />
+        </div>
+        
+        <!-- 給与種別 -->
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.salaryType}</label>
+            <select id="filter-salary-type" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                <option value="">{currentT.salaryTypeOptions[0]}</option>
+                <option value="時給">{currentT.salaryTypeOptions[1]}</option>
+                <option value="日給">{currentT.salaryTypeOptions[2]}</option>
+                <option value="月給">{currentT.salaryTypeOptions[3]}</option>
+            </select>
+        </div>
+
+        <!-- 給与額 -->
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.salaryRange}</label>
+            <input type="number" id="filter-salary-min" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary" placeholder="0" />
+        </div>
+
+        <!-- 日本語能力 -->
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.japaneseLevel}</label>
+            <select id="filter-japanese" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                <option value="">{currentT.japaneseLevelOptions[0]}</option>
+                <option value="不問">{currentT.japaneseLevelOptions[1]}</option>
+                <option value="N4以上">{currentT.japaneseLevelOptions[2]}</option>
+                <option value="N3以上">{currentT.japaneseLevelOptions[3]}</option>
+                <option value="N2以上">{currentT.japaneseLevelOptions[4]}</option>
+                <option value="N1以上">{currentT.japaneseLevelOptions[5]}</option>
+            </select>
+        </div>
+
+        <div class="lg:col-span-4 flex justify-end gap-3 mt-2">
+            <button type="button" id="btn-clear-filter" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium">
+                {currentT.clearFilter}
+            </button>
+            <!-- リアルタイムフィルタのためボタン不要な場合もありますが、モバイル等で明示的検索ボタンとして残す -->
+            <button type="button" id="btn-apply-filter" class="px-6 py-2 text-sm text-white bg-primary hover:bg-blue-800 rounded-md transition font-bold shadow-sm">
+                {currentT.applyFilter}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // クライアントサイドフィルタリングのロジック
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('job-filter-form');
+        if (!form) return;
+
+        const locInput = document.getElementById('filter-location') as HTMLInputElement;
+        const typeSelect = document.getElementById('filter-salary-type') as HTMLSelectElement;
+        const minInput = document.getElementById('filter-salary-min') as HTMLInputElement;
+        const jpSelect = document.getElementById('filter-japanese') as HTMLSelectElement;
+        const jobCards = document.querySelectorAll('.job-card-item');
+
+        const applyFilters = () => {
+            const locVal = locInput.value.toLowerCase();
+            const typeVal = typeSelect.value;
+            const minVal = parseInt(minInput.value) || 0;
+            const jpVal = jpSelect.value;
+
+            jobCards.forEach(card => {
+                const el = card as HTMLElement;
+                const loc = (el.dataset.location || '').toLowerCase();
+                const type = el.dataset.salaryType || '';
+                const salaryMax = parseInt(el.dataset.salaryMax || '0');
+                const jp = el.dataset.japanese || '';
+
+                let match = true;
+
+                if (locVal && !loc.includes(locVal)) match = false;
+                if (typeVal && type !== typeVal) match = false;
+                // 検索下限値が、求人の上限値より大きい場合はマッチしない
+                if (minVal > 0 && salaryMax < minVal) match = false;
+                if (jpVal && jp !== jpVal) match = false;
+
+                el.style.display = match ? 'block' : 'none';
+            });
+        };
+
+        const inputs = [locInput, typeSelect, minInput, jpSelect];
+        inputs.forEach(input => {
+            input.addEventListener('input', applyFilters);
+        });
+
+        document.getElementById('btn-apply-filter')?.addEventListener('click', applyFilters);
+        document.getElementById('btn-clear-filter')?.addEventListener('click', () => {
+            (form as HTMLFormElement).reset();
+            applyFilters();
+        });
+    });
+</script>
