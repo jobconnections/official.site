@@ -6,12 +6,12 @@ interface Props {
 const { lang } = Astro.props;
 
 const t = {
-  ja: {
+    ja: {
     filter: '条件で絞り込む',
     location: '勤務地',
     salaryType: '給与種別',
     salaryTypeOptions: ['指定なし', '時給', '日給', '月給'],
-    salaryRange: '給与額 (〜円)',
+    salaryRange: '給与額 (円以上)',
     japaneseLevel: '日本語能力',
     japaneseLevelOptions: ['指定なし', '不問', 'N4以上', 'N3以上', 'N2以上', 'N1以上'],
     applyFilter: '検索する',
@@ -22,7 +22,7 @@ const t = {
     location: 'Location',
     salaryType: 'Salary Type',
     salaryTypeOptions: ['Any', 'Hourly', 'Daily', 'Monthly'],
-    salaryRange: 'Salary Range (~JPY)',
+    salaryRange: 'Min Salary (JPY)',
     japaneseLevel: 'Japanese Level',
     japaneseLevelOptions: ['Any', 'Not Required', 'N4+', 'N3+', 'N2+', 'N1+'],
     applyFilter: 'Search',
@@ -33,7 +33,7 @@ const t = {
     location: 'Local',
     salaryType: 'Tipo de Salário',
     salaryTypeOptions: ['Qualquer', 'Por Hora', 'Diário', 'Mensal'],
-    salaryRange: 'Faixa Salarial (~JPY)',
+    salaryRange: 'Salário Mínimo (JPY)',
     japaneseLevel: 'Nível de Japonês',
     japaneseLevelOptions: ['Qualquer', 'Não exigido', 'N4+', 'N3+', 'N2+', 'N1+'],
     applyFilter: 'Buscar',
@@ -120,15 +120,15 @@ const currentT = t[lang];
                 const el = card as HTMLElement;
                 const loc = (el.dataset.location || '').toLowerCase();
                 const type = el.dataset.salaryType || '';
-                const salaryMax = parseInt(el.dataset.salaryMax || '0');
+                const salaryAmount = parseInt(el.dataset.salaryAmount || '0');
                 const jp = el.dataset.japanese || '';
 
                 let match = true;
 
                 if (locVal && !loc.includes(locVal)) match = false;
                 if (typeVal && type !== typeVal) match = false;
-                // 検索下限値が、求人の上限値より大きい場合はマッチしない
-                if (minVal > 0 && salaryMax < minVal) match = false;
+                // 検索下限値が、求人の金額より小さい場合はマッチしない
+                if (minVal > 0 && salaryAmount < minVal) match = false;
                 if (jpVal && jp !== jpVal) match = false;
 
                 el.style.display = match ? 'block' : 'none';

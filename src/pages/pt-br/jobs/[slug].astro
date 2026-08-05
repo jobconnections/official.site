@@ -33,7 +33,7 @@ const jsonLd = {
   "datePosted": formatDateISO(job.data.datePosted),
   ...(job.data.validThrough && { "validThrough": formatDateISO(job.data.validThrough) }),
   "employmentType": job.data.employmentType === '正社員' ? 'FULL_TIME' :
-                    job.data.employmentType === '契約社員' ? 'CONTRACTOR' :
+                    job.data.employmentType === '派遣社員' ? 'CONTRACTOR' :
                     job.data.employmentType === 'アルバイト' ? 'PART_TIME' : 'OTHER',
   "hiringOrganization": {
     "@type": "Organization",
@@ -54,8 +54,7 @@ const jsonLd = {
     "currency": "JPY",
     "value": {
       "@type": "QuantitativeValue",
-      "minValue": job.data.salary.min,
-      "maxValue": job.data.salary.max,
+      "value": job.data.salary.amount,
       "unitText": job.data.salary.type === '時給' ? 'HOUR' :
                   job.data.salary.type === '日給' ? 'DAY' : 'MONTH'
     }
@@ -112,7 +111,7 @@ const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
                             <i class="fa-solid fa-yen-sign w-6 text-primary mt-1 text-lg"></i>
                             <div>
                                 <p class="text-xs font-bold text-gray-500 mb-1">Salário</p>
-                                <p class="text-gray-900 font-medium">{job.data.salary.type} {job.data.salary.min.toLocaleString()} - {job.data.salary.max.toLocaleString()} JPY</p>
+                                <p class="text-gray-900 font-medium">{job.data.salary.type} {job.data.salary.amount.toLocaleString()} JPY</p>
                             </div>
                         </div>
                         <div class="flex items-start">

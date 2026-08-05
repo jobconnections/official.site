@@ -33,7 +33,7 @@ const sortedJobs = allJobs.sort((a, b) => b.data.datePosted.valueOf() - a.data.d
                         <div class="job-card-item" 
                              data-location={job.data.location.prefecture + ' ' + job.data.location.city}
                              data-salary-type={job.data.salary.type}
-                             data-salary-max={job.data.salary.max}
+                             data-salary-amount={job.data.salary.amount}
                              data-japanese={job.data.japaneseLevel}>
                             <JobCard job={job} lang="en" />
                         </div>

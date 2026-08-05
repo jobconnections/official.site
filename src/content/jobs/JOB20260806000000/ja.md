@@ -7,8 +7,7 @@ location:
   prefecture: "三重県"
 salary:
   type: "時給"
-  min: 1200
-  max: 1500
+  amount: 1300
 japaneseLevel: "不問"
 datePosted: 2026-08-06
 ---

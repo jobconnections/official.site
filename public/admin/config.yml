@@ -31,7 +31,7 @@ collections:
     fields:
       - {label: "タイトル", name: "title", widget: "string", i18n: true}
       - {label: "ステータス", name: "status", widget: "select", options: ["draft", "published", "closed"], default: "draft", i18n: duplicate}
-      - {label: "雇用形態", name: "employmentType", widget: "select", options: ["正社員", "契約社員", "アルバイト", "業務委託"], i18n: duplicate}
+      - {label: "雇用形態", name: "employmentType", widget: "select", options: ["正社員", "派遣社員", "アルバイト"], i18n: duplicate}
       - label: "勤務地"
         name: "location"
         widget: "object"
@@ -45,8 +45,7 @@ collections:
         i18n: duplicate
         fields:
           - {label: "給与種別", name: "type", widget: "select", options: ["時給", "日給", "月給"]}
-          - {label: "下限", name: "min", widget: "number", value_type: "int"}
-          - {label: "上限", name: "max", widget: "number", value_type: "int", required: false}
+          - {label: "金額", name: "amount", widget: "number", value_type: "int"}
       - {label: "日本語能力", name: "japaneseLevel", widget: "select", options: ["不問", "N4以上", "N3以上", "N2以上", "N1以上"], default: "不問", i18n: duplicate}
       - {label: "メイン画像", name: "image", widget: "image", required: false, i18n: duplicate}
       - {label: "掲載日", name: "datePosted", widget: "datetime", format: "YYYY-MM-DD", time_format: false, type: "date", i18n: duplicate}

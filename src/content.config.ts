@@ -8,15 +8,14 @@ const jobsCollection = defineCollection({
   schema: z.object({
     title: z.string(),
     status: z.enum(['published', 'draft']),
-    employmentType: z.enum(['正社員', '契約社員', 'アルバイト', '業務委託']),
+    employmentType: z.enum(['正社員', '派遣社員', 'アルバイト']),
     location: z.object({
       city: z.string(),
       prefecture: z.string(),
     }),
     salary: z.object({
       type: z.enum(['時給', '日給', '月給']),
-      min: z.number(),
-      max: z.number(),
+      amount: z.number(),
     }),
     japaneseLevel: z.enum(['不問', 'N4以上', 'N3以上', 'N2以上', 'N1以上']),
     image: z.string().optional(),

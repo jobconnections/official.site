@@ -37,7 +37,7 @@ const t = {
 };
 const currentT = t[lang];
 
-const salaryText = `${job.data.salary.type} ${job.data.salary.min.toLocaleString()}〜${job.data.salary.max.toLocaleString()}円`;
+const salaryText = `${job.data.salary.type} ${job.data.salary.amount.toLocaleString()}${lang === 'ja' ? '円' : ' JPY'}`;
 const jobUrl = lang === 'ja' ? `/jobs/${job.id.split('/')[0]}/` : `/${lang}/jobs/${job.id.split('/')[0]}/`;
 
 // 日付のフォーマット (例: 2026.08.06)
