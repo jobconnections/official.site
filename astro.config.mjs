@@ -7,6 +7,9 @@ export default defineConfig({
   site: 'https://www.jobconnections.jp',
   output: 'static',
   adapter: netlify(),
+  redirects: {
+    '/admin': '/admin/index.html'
+  },
   integrations: [
     tailwind(),
     sitemap({
