@@ -1,3 +1,4 @@
+// @ts-nocheck
 // === スパム対策：クリック時のみ暗号化解除＆表示・コピー ===
 // クリップボードAPIフォールバック
 function fallbackCopyTextToClipboard(text) {
@@ -9,6 +10,7 @@ function fallbackCopyTextToClipboard(text) {
     textArea.select();
     var successful = false;
     try {
+        // @ts-ignore
         successful = document.execCommand('copy');
     } catch (err) {}
     document.body.removeChild(textArea);

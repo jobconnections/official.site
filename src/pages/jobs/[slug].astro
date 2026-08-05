@@ -20,7 +20,6 @@ const { job } = Astro.props;
 const { Content } = await render(job);
 
 const siteUrl = 'https://www.jobconnections.jp';
-const currentUrl = new URL(Astro.url.pathname, siteUrl).toString();
 
 // 日付フォーマット用関数 (YYYY-MM-DD)
 const formatDateISO = (date: Date) => {
