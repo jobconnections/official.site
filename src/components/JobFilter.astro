@@ -42,14 +42,14 @@ const t = {
 };
 const currentT = t[lang];
 
-// 実際のアプリではデータからユニークな勤務地を抽出しますが、ここでは簡易な入力とします
+const isJa = lang === 'ja';
 ---
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
     <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
         <i class="fa-solid fa-filter text-primary"></i> {currentT.filter}
     </h3>
-    <form id="job-filter-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <form id="job-filter-form" class={`grid grid-cols-1 md:grid-cols-2 ${isJa ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-4`}>
         <!-- 勤務地 -->
         <div>
             <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.location}</label>
@@ -73,24 +73,24 @@ const currentT = t[lang];
             <input type="number" id="filter-salary-min" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary" placeholder="0" />
         </div>
 
-        <!-- 日本語能力 -->
-        <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.japaneseLevel}</label>
-            <select id="filter-japanese" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary">
-                <option value="">{currentT.japaneseLevelOptions[0]}</option>
-                <option value="不問">{currentT.japaneseLevelOptions[1]}</option>
-                <option value="N4以上">{currentT.japaneseLevelOptions[2]}</option>
-                <option value="N3以上">{currentT.japaneseLevelOptions[3]}</option>
-                <option value="N2以上">{currentT.japaneseLevelOptions[4]}</option>
-                <option value="N1以上">{currentT.japaneseLevelOptions[5]}</option>
-            </select>
-        </div>
+        <!-- 日本語能力 (多言語のみ表示) -->
+        {!isJa && (
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.japaneseLevel}</label>
+                <select id="filter-japanese" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                    <option value="">{currentT.japaneseLevelOptions[0]}</option>
+                    <option value="不問">{currentT.japaneseLevelOptions[1]}</option>
+                    <option value="挨拶・簡単な指示">{lang === 'en' ? 'Basic / Greetings' : 'Básico / Saudações'}</option>
+                    <option value="日常会話">{lang === 'en' ? 'Daily Conversation' : 'Conversação Diária'}</option>
+                    <option value="ビジネス">{lang === 'en' ? 'Business / Fluent' : 'Negócios / Fluente'}</option>
+                </select>
+            </div>
+        )}
 
-        <div class="lg:col-span-4 flex justify-end gap-3 mt-2">
+        <div class={`${isJa ? 'lg:col-span-3' : 'lg:col-span-4'} flex justify-end gap-3 mt-2`}>
             <button type="button" id="btn-clear-filter" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium">
                 {currentT.clearFilter}
             </button>
-            <!-- リアルタイムフィルタのためボタン不要な場合もありますが、モバイル等で明示的検索ボタンとして残す -->
             <button type="button" id="btn-apply-filter" class="px-6 py-2 text-sm text-white bg-primary hover:bg-blue-800 rounded-md transition font-bold shadow-sm">
                 {currentT.applyFilter}
             </button>
@@ -104,38 +104,37 @@ const currentT = t[lang];
         const form = document.getElementById('job-filter-form');
         if (!form) return;
 
-        const locInput = document.getElementById('filter-location') as HTMLInputElement;
-        const typeSelect = document.getElementById('filter-salary-type') as HTMLSelectElement;
-        const minInput = document.getElementById('filter-salary-min') as HTMLInputElement;
-        const jpSelect = document.getElementById('filter-japanese') as HTMLSelectElement;
+        const locInput = document.getElementById('filter-location') as HTMLInputElement | null;
+        const typeSelect = document.getElementById('filter-salary-type') as HTMLSelectElement | null;
+        const minInput = document.getElementById('filter-salary-min') as HTMLInputElement | null;
+        const jpSelect = document.getElementById('filter-japanese') as HTMLSelectElement | null;
         const jobCards = document.querySelectorAll('.job-card-item');
 
         const applyFilters = () => {
-            const locVal = locInput.value.toLowerCase();
-            const typeVal = typeSelect.value;
-            const minVal = parseInt(minInput.value) || 0;
-            const jpVal = jpSelect.value;
+            const locVal = locInput?.value.toLowerCase() || '';
+            const typeVal = typeSelect?.value || '';
+            const minVal = parseInt(minInput?.value || '0') || 0;
+            const jpVal = jpSelect?.value || '';
 
             jobCards.forEach(card => {
                 const el = card as HTMLElement;
                 const loc = (el.dataset.location || '').toLowerCase();
                 const type = el.dataset.salaryType || '';
                 const salaryAmount = parseInt(el.dataset.salaryAmount || '0');
-                const jp = el.dataset.japanese || '';
+                const jpSpeaking = el.dataset.japaneseSpeaking || '';
 
                 let match = true;
 
                 if (locVal && !loc.includes(locVal)) match = false;
                 if (typeVal && type !== typeVal) match = false;
-                // 検索下限値が、求人の金額より小さい場合はマッチしない
                 if (minVal > 0 && salaryAmount < minVal) match = false;
-                if (jpVal && jp !== jpVal) match = false;
+                if (jpVal && jpSpeaking !== jpVal) match = false;
 
                 el.style.display = match ? 'block' : 'none';
             });
         };
 
-        const inputs = [locInput, typeSelect, minInput, jpSelect];
+        const inputs = [locInput, typeSelect, minInput, jpSelect].filter(Boolean) as HTMLElement[];
         inputs.forEach(input => {
             input.addEventListener('input', applyFilters);
         });

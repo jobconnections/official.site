@@ -2,13 +2,14 @@
 title: "Equipe de Produção (Fictício)"
 status: "published"
 employmentType: "正社員"
-location:
-  city: "Yokkaichi"
-  prefecture: "Mie"
-salary:
-  type: "時給"
-  amount: 1300
-japaneseLevel: "不問"
+location: "Mie Yokkaichi"
+salaryType: "時給"
+salaryAmount: 1300
+japanese:
+  speaking: "挨拶・簡単な指示"
+  reading: "ひらがな・カタカナ"
+  writing: "不問"
+  jlpt: "不問"
 datePosted: 2026-08-06
 ---
 

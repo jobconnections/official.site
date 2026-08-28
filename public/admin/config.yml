@@ -32,21 +32,19 @@ collections:
       - {label: "タイトル", name: "title", widget: "string", i18n: true}
       - {label: "ステータス", name: "status", widget: "select", options: ["draft", "published", "closed"], default: "draft", i18n: duplicate}
       - {label: "雇用形態", name: "employmentType", widget: "select", options: ["正社員", "派遣社員", "アルバイト"], i18n: duplicate}
-      - label: "勤務地"
-        name: "location"
+      - {label: "勤務地", name: "location", widget: "string", i18n: true}
+      - {label: "給与種別", name: "salaryType", widget: "select", options: ["時給", "日給", "月給"], i18n: duplicate}
+      - {label: "金額", name: "salaryAmount", widget: "number", value_type: "int", i18n: duplicate}
+      - label: "日本語要件 (多言語のみ)"
+        name: "japanese"
         widget: "object"
-        i18n: duplicate
+        required: false
+        i18n: true
         fields:
-          - {label: "都道府県", name: "prefecture", widget: "string"}
-          - {label: "市区町村", name: "city", widget: "string"}
-      - label: "給与"
-        name: "salary"
-        widget: "object"
-        i18n: duplicate
-        fields:
-          - {label: "給与種別", name: "type", widget: "select", options: ["時給", "日給", "月給"]}
-          - {label: "金額", name: "amount", widget: "number", value_type: "int"}
-      - {label: "日本語能力", name: "japaneseLevel", widget: "select", options: ["不問", "N4以上", "N3以上", "N2以上", "N1以上"], default: "不問", i18n: duplicate}
+          - {label: "会話 (Speaking)", name: "speaking", widget: "select", options: ["不問", "挨拶・簡単な指示", "日常会話", "ビジネス"], default: "不問"}
+          - {label: "読み (Reading)", name: "reading", widget: "select", options: ["不問", "ひらがな・カタカナ", "簡単な漢字", "一般的な文書"], default: "不問"}
+          - {label: "書き (Writing)", name: "writing", widget: "select", options: ["不問", "ひらがな・カタカナ", "簡単なメモ", "ビジネスメール"], default: "不問"}
+          - {label: "JLPT目安 (任意)", name: "jlpt", widget: "select", options: ["不問", "N5以上", "N4以上", "N3以上", "N2以上", "N1以上"], default: "不問", required: false}
       - {label: "メイン画像", name: "image", widget: "image", required: false, i18n: duplicate}
       - {label: "掲載日", name: "datePosted", widget: "datetime", format: "YYYY-MM-DD", time_format: false, type: "date", i18n: duplicate}
       - {label: "掲載終了日", name: "validThrough", widget: "datetime", format: "YYYY-MM-DD", time_format: false, type: "date", required: false, i18n: duplicate}

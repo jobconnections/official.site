@@ -37,7 +37,7 @@ const t = {
 };
 const currentT = t[lang];
 
-const salaryText = `${job.data.salary.type} ${job.data.salary.amount.toLocaleString()}${lang === 'ja' ? '円' : ' JPY'}`;
+const salaryText = `${job.data.salaryType} ${job.data.salaryAmount.toLocaleString()}${lang === 'ja' ? '円' : ' JPY'}`;
 const jobUrl = lang === 'ja' ? `/jobs/${job.id.split('/')[0]}/` : `/${lang}/jobs/${job.id.split('/')[0]}/`;
 
 // 日付のフォーマット (例: 2026.08.06)
@@ -45,6 +45,23 @@ const formatDate = (date: Date) => {
   const d = new Date(date);
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 };
+const getSpeakingText = () => {
+  if (!job.data.japanese) return null;
+  const speaking = job.data.japanese.speaking;
+  if (lang === 'en') {
+    if (speaking === '挨拶・簡単な指示') return 'Basic / Greetings';
+    if (speaking === '日常会話') return 'Daily Conversation';
+    if (speaking === 'ビジネス') return 'Business / Fluent';
+    return 'Not Required';
+  } else if (lang === 'pt-br') {
+    if (speaking === '挨拶・簡単な指示') return 'Básico / Saudações';
+    if (speaking === '日常会話') return 'Conversação Diária';
+    if (speaking === 'ビジネス') return 'Negócios / Fluente';
+    return 'Não exigido';
+  }
+  return speaking;
+};
+const speakingText = getSpeakingText();
 ---
 
 <a href={jobUrl} class="block bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all group overflow-hidden">
@@ -68,16 +85,18 @@ const formatDate = (date: Date) => {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 mb-5 text-sm">
             <div class="flex items-center text-gray-600">
                 <i class="fa-solid fa-location-dot w-5 text-gray-400"></i>
-                <span>{job.data.location.prefecture} {job.data.location.city}</span>
+                <span>{job.data.location}</span>
             </div>
             <div class="flex items-center text-gray-600">
                 <i class="fa-solid fa-yen-sign w-5 text-gray-400"></i>
                 <span class="font-medium text-gray-900">{salaryText}</span>
             </div>
-            <div class="flex items-center text-gray-600">
-                <i class="fa-solid fa-language w-5 text-gray-400"></i>
-                <span>{job.data.japaneseLevel}</span>
-            </div>
+            {lang !== 'ja' && speakingText && (
+                <div class="flex items-center text-gray-600">
+                    <i class="fa-solid fa-language w-5 text-gray-400"></i>
+                    <span>{currentT.japaneseLevel}: {speakingText}</span>
+                </div>
+            )}
             <div class="flex items-center text-gray-600">
                 <i class="fa-regular fa-calendar w-5 text-gray-400"></i>
                 <span>{currentT.datePosted}: {formatDate(job.data.datePosted)}</span>

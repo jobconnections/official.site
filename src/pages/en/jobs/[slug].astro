@@ -44,8 +44,7 @@ const jsonLd = {
     "@type": "Place",
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": job.data.location.city,
-      "addressRegion": job.data.location.prefecture,
+      "streetAddress": job.data.location,
       "addressCountry": "JP"
     }
   },
@@ -54,9 +53,9 @@ const jsonLd = {
     "currency": "JPY",
     "value": {
       "@type": "QuantitativeValue",
-      "value": job.data.salary.amount,
-      "unitText": job.data.salary.type === '時給' ? 'HOUR' :
-                  job.data.salary.type === '日給' ? 'DAY' : 'MONTH'
+      "value": job.data.salaryAmount,
+      "unitText": job.data.salaryType === '時給' ? 'HOUR' :
+                  job.data.salaryType === '日給' ? 'DAY' : 'MONTH'
     }
   },
   "inLanguage": "en"
@@ -65,11 +64,31 @@ const jsonLd = {
 const whatsappUrl = 'https://wa.me/819000000000'; // FIXME
 const lineUrl = 'https://line.me/R/ti/p/@placeholder'; // FIXME
 const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
+const getEnSpeaking = (val?: string) => {
+  if (val === '挨拶・簡単な指示') return 'Basic Greetings & Simple Commands';
+  if (val === '日常会話') return 'Daily Conversation';
+  if (val === 'ビジネス') return 'Business / Fluent';
+  return 'Not Required';
+};
+
+const getEnReading = (val?: string) => {
+  if (val === 'ひらがな・カタカナ') return 'Hiragana & Katakana only';
+  if (val === '簡単な漢字') return 'Simple Kanji & Site Signs';
+  if (val === '一般的な文書') return 'General Texts & Work Manuals';
+  return 'Not Required';
+};
+
+const getEnWriting = (val?: string) => {
+  if (val === 'ひらがな・カタカナ') return 'Hiragana & Katakana only';
+  if (val === '簡単なメモ') return 'Simple Notes & Messages';
+  if (val === 'ビジネスメール') return 'Business Emails & Reports';
+  return 'Not Required';
+};
 ---
 
 <BaseLayout 
   title={`${job.data.title} | Jobs | JOB CONNECTIONS`} 
-  description={`${job.data.title} job opening in ${job.data.location.city}, ${job.data.location.prefecture}.`}
+  description={`${job.data.title} job opening in ${job.data.location}.`}
   lang="en"
   ogImage={job.data.image}
 >
@@ -99,29 +118,55 @@ const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 p-6 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-6 bg-gray-50 rounded-xl border border-gray-100">
                         <div class="flex items-start">
                             <i class="fa-solid fa-location-dot w-6 text-primary mt-1 text-lg"></i>
                             <div>
                                 <p class="text-xs font-bold text-gray-500 mb-1">Location</p>
-                                <p class="text-gray-900 font-medium">{job.data.location.prefecture} {job.data.location.city}</p>
+                                <p class="text-gray-900 font-medium">{job.data.location}</p>
                             </div>
                         </div>
                         <div class="flex items-start">
                             <i class="fa-solid fa-yen-sign w-6 text-primary mt-1 text-lg"></i>
                             <div>
                                 <p class="text-xs font-bold text-gray-500 mb-1">Salary</p>
-                                <p class="text-gray-900 font-medium">{job.data.salary.type} {job.data.salary.amount.toLocaleString()} JPY</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fa-solid fa-language w-6 text-primary mt-1 text-lg"></i>
-                            <div>
-                                <p class="text-xs font-bold text-gray-500 mb-1">Japanese Level</p>
-                                <p class="text-gray-900 font-medium">{job.data.japaneseLevel}</p>
+                                <p class="text-gray-900 font-medium">{job.data.salaryType} {job.data.salaryAmount.toLocaleString()} JPY</p>
                             </div>
                         </div>
                     </div>
+
+                    {job.data.japanese && (
+                        <div class="mb-10 p-6 bg-blue-50/50 rounded-xl border border-blue-100">
+                            <h3 class="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-language text-primary text-lg"></i> Japanese Language Requirements
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-50">
+                                    <p class="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-comments text-primary"></i> Speaking / Conversation
+                                    </p>
+                                    <p class="text-gray-900 font-bold text-sm">{getEnSpeaking(job.data.japanese.speaking)}</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-50">
+                                    <p class="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-book-open text-primary"></i> Reading
+                                    </p>
+                                    <p class="text-gray-900 font-bold text-sm">{getEnReading(job.data.japanese.reading)}</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-50">
+                                    <p class="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-pen-nib text-primary"></i> Writing
+                                    </p>
+                                    <p class="text-gray-900 font-bold text-sm">{getEnWriting(job.data.japanese.writing)}</p>
+                                </div>
+                            </div>
+                            {job.data.japanese.jlpt && job.data.japanese.jlpt !== '不問' && (
+                                <p class="text-xs text-gray-600 mt-3 pt-3 border-t border-blue-100 flex items-center gap-2">
+                                    <span class="font-bold text-primary">JLPT Equivalent:</span> {job.data.japanese.jlpt}
+                                </p>
+                            )}
+                        </div>
+                    )}
 
                     <div class="prose prose-blue max-w-none prose-headings:font-bold prose-a:text-primary">
                         <Content />

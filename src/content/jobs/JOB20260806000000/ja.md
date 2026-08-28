@@ -2,13 +2,9 @@
 title: "製造スタッフ（ダミー）"
 status: "published"
 employmentType: "正社員"
-location:
-  city: "四日市市"
-  prefecture: "三重県"
-salary:
-  type: "時給"
-  amount: 1300
-japaneseLevel: "不問"
+location: "三重県 四日市市"
+salaryType: "時給"
+salaryAmount: 1300
 datePosted: 2026-08-06
 ---
 
