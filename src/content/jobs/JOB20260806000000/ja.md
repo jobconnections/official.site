@@ -1,23 +1,26 @@
 ---
+companyName: "JOB CONNECTIONS株式会社"
 title: "製造スタッフ（ダミー）"
 status: "published"
-employmentType: "正社員"
-location: "三重県 四日市市"
+jobCategory: "工場・製造"
+employmentType:
+  - "正社員"
+jobDescription: |
+  工場での製造業務を担当していただきます。
+  未経験の方でも先輩スタッフが丁寧に指導します。
+
+  【業務内容】
+  ・部品の組み立て
+  ・検品・梱包作業
+  ・設備の簡単な清掃
+targetCandidates: |
+  ・交替勤務が可能な方
+  ・長期で働ける方
+prefecture: "三重県"
+locationDetail: "四日市市"
 salaryType: "時給"
 salaryAmount: 1300
+requiredInfo: "氏名・連絡先のみ"
+requirePhone: false
 datePosted: 2026-08-06
 ---
-
-# 製造スタッフの募集
-
-工場での製造業務を担当していただきます。
-未経験の方でも先輩スタッフが丁寧に指導します。
-
-## 業務内容
-- 部品の組み立て
-- 検品・梱包作業
-- 設備の簡単な清掃
-
-## 歓迎条件
-- 交替勤務が可能な方
-- 長期で働ける方

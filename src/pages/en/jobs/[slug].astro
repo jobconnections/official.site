@@ -1,14 +1,19 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
   const jobs = await getCollection('jobs', (entry) => {
-    return entry.id.endsWith('/en') && entry.data.status === 'published';
+    const isEn = entry.id.startsWith('en/') || entry.id.startsWith('en\\') || entry.id.endsWith('/en.md') || entry.id.endsWith('/en');
+    return isEn && entry.data.status === 'published';
   });
   
   return jobs.map(job => {
-    const slug = job.id.split('/')[0];
+    const cleanId = job.id.replace(/\.md$/, '').replace(/\\/g, '/');
+    const parts = cleanId.split('/');
+    const slug = (parts[0] === 'ja' || parts[0] === 'en' || parts[0] === 'pt-br') 
+      ? parts[parts.length - 1] 
+      : parts[0];
     return {
       params: { slug },
       props: { job },
@@ -17,13 +22,37 @@ export async function getStaticPaths() {
 }
 
 const { job } = Astro.props;
-const { Content } = await render(job);
 
 const siteUrl = 'https://www.jobconnections.jp';
+
+// 勤務地テキスト生成
+const locationText = job.data.locationDetail 
+  ? `${job.data.prefecture} ${job.data.locationDetail}`
+  : job.data.prefecture;
+
+// 雇用形態テキスト（配列対応）
+const employmentTypes = Array.isArray(job.data.employmentType) 
+  ? job.data.employmentType 
+  : [job.data.employmentType];
+
+// 給与テキスト生成
+const salaryText = job.data.salaryUpperLimit
+  ? `${job.data.salaryType} ${job.data.salaryAmount.toLocaleString()} ~ ${job.data.salaryUpperLimit.toLocaleString()} JPY`
+  : `${job.data.salaryType} ${job.data.salaryAmount.toLocaleString()} JPY`;
 
 const formatDateISO = (date: Date) => {
   const d = new Date(date);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const mapEmploymentType = (t: string) => {
+  if (t === '正社員') return 'FULL_TIME';
+  if (t === 'アルバイト・パート') return 'PART_TIME';
+  if (t === '派遣社員' || t === '紹介予定派遣') return 'CONTRACTOR';
+  if (t === '契約社員') return 'CONTRACTOR';
+  if (t === '業務委託') return 'CONTRACTOR';
+  if (t === '新卒・インターン') return 'INTERN';
+  return 'OTHER';
 };
 
 const jsonLd = {
@@ -32,19 +61,19 @@ const jsonLd = {
   "title": job.data.title,
   "datePosted": formatDateISO(job.data.datePosted),
   ...(job.data.validThrough && { "validThrough": formatDateISO(job.data.validThrough) }),
-  "employmentType": job.data.employmentType === '正社員' ? 'FULL_TIME' :
-                    job.data.employmentType === '派遣社員' ? 'CONTRACTOR' :
-                    job.data.employmentType === 'アルバイト' ? 'PART_TIME' : 'OTHER',
+  "employmentType": employmentTypes.map(mapEmploymentType),
+  "description": job.data.jobDescription,
   "hiringOrganization": {
     "@type": "Organization",
-    "name": "JOB CONNECTIONS株式会社",
+    "name": job.data.companyName,
     "sameAs": siteUrl
   },
   "jobLocation": {
     "@type": "Place",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": job.data.location,
+      "streetAddress": locationText,
+      "addressRegion": job.data.prefecture,
       "addressCountry": "JP"
     }
   },
@@ -54,6 +83,7 @@ const jsonLd = {
     "value": {
       "@type": "QuantitativeValue",
       "value": job.data.salaryAmount,
+      ...(job.data.salaryUpperLimit && { "maxValue": job.data.salaryUpperLimit }),
       "unitText": job.data.salaryType === '時給' ? 'HOUR' :
                   job.data.salaryType === '日給' ? 'DAY' : 'MONTH'
     }
@@ -64,6 +94,7 @@ const jsonLd = {
 const whatsappUrl = 'https://wa.me/819000000000'; // FIXME
 const lineUrl = 'https://line.me/R/ti/p/@placeholder'; // FIXME
 const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
+
 const getEnSpeaking = (val?: string) => {
   if (val === '挨拶・簡単な指示') return 'Basic Greetings & Simple Commands';
   if (val === '日常会話') return 'Daily Conversation';
@@ -88,7 +119,7 @@ const getEnWriting = (val?: string) => {
 
 <BaseLayout 
   title={`${job.data.title} | Jobs | JOB CONNECTIONS`} 
-  description={`${job.data.title} job opening in ${job.data.location}.`}
+  description={`${job.data.title} job opening in ${locationText}.`}
   lang="en"
   ogImage={job.data.image}
 >
@@ -109,32 +140,66 @@ const getEnWriting = (val?: string) => {
                 
                 <div class="p-6 md:p-10">
                     <div class="mb-8">
-                        <span class="inline-block px-3 py-1 bg-blue-50 text-primary text-xs font-bold rounded-full mb-3">
-                            {job.data.employmentType}
-                        </span>
-                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">{job.data.title}</h1>
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            {employmentTypes.map(et => (
+                                <span class="inline-block px-3 py-1 bg-blue-50 text-primary text-xs font-bold rounded-full">
+                                    {et}
+                                </span>
+                            ))}
+                        </div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2 leading-tight">{job.data.title}</h1>
+                        <p class="text-sm text-gray-600 mb-2">{job.data.companyName}</p>
                         <p class="text-sm text-gray-500 flex items-center gap-2">
                             <i class="fa-regular fa-clock"></i> Posted: {formatDateISO(job.data.datePosted)}
                         </p>
                     </div>
 
+                    <!-- Summary cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-6 bg-gray-50 rounded-xl border border-gray-100">
                         <div class="flex items-start">
                             <i class="fa-solid fa-location-dot w-6 text-primary mt-1 text-lg"></i>
                             <div>
                                 <p class="text-xs font-bold text-gray-500 mb-1">Location</p>
-                                <p class="text-gray-900 font-medium">{job.data.location}</p>
+                                <p class="text-gray-900 font-medium">{locationText}</p>
                             </div>
                         </div>
                         <div class="flex items-start">
                             <i class="fa-solid fa-yen-sign w-6 text-primary mt-1 text-lg"></i>
                             <div>
                                 <p class="text-xs font-bold text-gray-500 mb-1">Salary</p>
-                                <p class="text-gray-900 font-medium">{job.data.salaryType} {job.data.salaryAmount.toLocaleString()} JPY</p>
+                                <p class="text-gray-900 font-medium">{salaryText}</p>
                             </div>
                         </div>
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-briefcase w-6 text-primary mt-1 text-lg"></i>
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 mb-1">Employment Type</p>
+                                <p class="text-gray-900 font-medium">{employmentTypes.join(', ')}</p>
+                            </div>
+                        </div>
+                        {job.data.jobCategory && (
+                            <div class="flex items-start">
+                                <i class="fa-solid fa-tag w-6 text-primary mt-1 text-lg"></i>
+                                <div>
+                                    <p class="text-xs font-bold text-gray-500 mb-1">Category</p>
+                                    <p class="text-gray-900 font-medium">{job.data.jobCategory}</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
+                    <!-- Job Features -->
+                    {job.data.jobFeatures && job.data.jobFeatures.length > 0 && (
+                        <div class="flex flex-wrap gap-2 mb-10">
+                            {job.data.jobFeatures.map(feature => (
+                                <span class="inline-block px-3 py-1 bg-blue-50 text-primary text-sm font-medium rounded-full border border-blue-100">
+                                    {feature}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+
+                    <!-- Japanese Language Requirements -->
                     {(job.data.japaneseSpeaking || job.data.japaneseReading || job.data.japaneseWriting) && (
                         <div class="mb-10 p-6 bg-blue-50/50 rounded-xl border border-blue-100">
                             <h3 class="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -168,9 +233,72 @@ const getEnWriting = (val?: string) => {
                         </div>
                     )}
 
-                    <div class="prose prose-blue max-w-none prose-headings:font-bold prose-a:text-primary">
-                        <Content />
+                    <!-- Job Description -->
+                    <div class="mb-10">
+                        <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 pb-2 border-b-2 border-primary" style="border-bottom-width: 3px;">
+                            <i class="fa-solid fa-file-lines text-primary"></i> Job Description
+                        </h2>
+                        <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.jobDescription}</div>
                     </div>
+
+                    <!-- Job Appeal -->
+                    {job.data.jobAppeal && (
+                        <div class="mb-10">
+                            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 pb-2 border-b-2 border-primary" style="border-bottom-width: 3px;">
+                                <i class="fa-solid fa-heart text-primary"></i> Why This Job
+                            </h2>
+                            <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.jobAppeal}</div>
+                        </div>
+                    )}
+
+                    <!-- Target Candidates -->
+                    {job.data.targetCandidates && (
+                        <div class="mb-10">
+                            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 pb-2 border-b-2 border-primary" style="border-bottom-width: 3px;">
+                                <i class="fa-solid fa-user-check text-primary"></i> Ideal Candidates
+                            </h2>
+                            <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.targetCandidates}</div>
+                        </div>
+                    )}
+
+                    <!-- Working Conditions -->
+                    {(job.data.transportationNotes || job.data.benefits || job.data.workingHours) && (
+                        <div class="mb-10">
+                            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 pb-2 border-b-2 border-primary" style="border-bottom-width: 3px;">
+                                <i class="fa-solid fa-clipboard-list text-primary"></i> Working Conditions
+                            </h2>
+                            <div class="space-y-4">
+                                {job.data.transportationNotes && (
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-600 mb-1">Transportation & Location Notes</p>
+                                        <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.transportationNotes}</div>
+                                    </div>
+                                )}
+                                {job.data.benefits && (
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-600 mb-1">Benefits & Compensation Details</p>
+                                        <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.benefits}</div>
+                                    </div>
+                                )}
+                                {job.data.workingHours && (
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-600 mb-1">Working Hours & Holidays</p>
+                                        <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.workingHours}</div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    <!-- Selection Process -->
+                    {job.data.selectionProcess && (
+                        <div class="mb-10">
+                            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 pb-2 border-b-2 border-primary" style="border-bottom-width: 3px;">
+                                <i class="fa-solid fa-clipboard-check text-primary"></i> Selection Process
+                            </h2>
+                            <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.selectionProcess}</div>
+                        </div>
+                    )}
 
                     <div class="mt-12 pt-8 border-t border-gray-100">
                         <h3 class="text-center font-bold text-gray-900 mb-6">Apply or Contact Us</h3>

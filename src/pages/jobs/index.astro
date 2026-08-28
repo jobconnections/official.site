@@ -4,11 +4,10 @@ import JobFilter from '../../components/JobFilter.astro';
 import JobCard from '../../components/JobCard.astro';
 import { getCollection } from 'astro:content';
 
-// 日本語の求人のみ取得（URLが "XXX/ja" で終わるものを抽出する簡易実装）
-// ※ Astro Content Collections で i18n structure: multiple_folders の場合
-// slug は "JOB.../ja" のようになります。
+// 日本語の求人のみ取得
 const allJobs = await getCollection('jobs', (entry) => {
-  return entry.id.endsWith('/ja') && entry.data.status === 'published';
+  const isJa = entry.id.startsWith('ja/') || entry.id.endsWith('/ja.md') || entry.id.endsWith('/ja') || entry.id.startsWith('ja\\');
+  return isJa && entry.data.status === 'published';
 });
 
 // 最終更新日（掲載日）の新しい順にソート
@@ -35,7 +34,7 @@ const sortedJobs = allJobs.sort((a, b) => b.data.datePosted.valueOf() - a.data.d
                 ) : (
                     sortedJobs.map(job => (
                         <div class="job-card-item" 
-                             data-location={job.data.location}
+                             data-location={`${job.data.prefecture} ${job.data.locationDetail || ''}`}
                              data-salary-type={job.data.salaryType}
                              data-salary-amount={job.data.salaryAmount}>
                             <JobCard job={job} lang="ja" />

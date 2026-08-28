@@ -29,17 +29,296 @@ collections:
     i18n: true
     slug: "JOB{{year}}{{month}}{{day}}{{hour}}{{minute}}{{second}}"
     fields:
-      - {label: "タイトル", name: "title", widget: "string", i18n: true}
-      - {label: "ステータス", name: "status", widget: "select", options: ["draft", "published", "closed"], default: "draft", i18n: duplicate}
-      - {label: "雇用形態", name: "employmentType", widget: "select", options: ["正社員", "派遣社員", "アルバイト"], i18n: duplicate}
-      - {label: "勤務地", name: "location", widget: "string", i18n: true}
-      - {label: "給与種別", name: "salaryType", widget: "select", options: ["時給", "日給", "月給"], i18n: duplicate}
-      - {label: "金額", name: "salaryAmount", widget: "number", value_type: "int", i18n: duplicate}
-      - {label: "日本語・会話 (Speaking)", name: "japaneseSpeaking", widget: "select", options: ["問わない", "挨拶・簡単な指示", "日常会話", "ビジネス"], default: "問わない", i18n: true}
-      - {label: "日本語・読み (Reading)", name: "japaneseReading", widget: "select", options: ["問わない", "ひらがな・カタカナ", "簡単な漢字", "一般的な文書"], default: "問わない", i18n: true}
-      - {label: "日本語・書き (Writing)", name: "japaneseWriting", widget: "select", options: ["問わない", "ひらがな・カタカナ", "簡単なメモ", "ビジネスメール"], default: "問わない", i18n: true}
-      - {label: "日本語・JLPT目安 (任意)", name: "japaneseJlpt", widget: "select", options: ["問わない", "N5以上", "N4以上", "N3以上", "N2以上", "N1以上"], default: "問わない", i18n: true}
-      - {label: "メイン画像", name: "image", widget: "image", required: false, i18n: duplicate}
-      - {label: "掲載日", name: "datePosted", widget: "datetime", format: "YYYY-MM-DD", time_format: false, type: "date", i18n: duplicate}
-      - {label: "掲載終了日", name: "validThrough", widget: "datetime", format: "YYYY-MM-DD", time_format: false, type: "date", required: false, i18n: duplicate}
-      - {label: "本文", name: "body", widget: "markdown", i18n: true}
+      # ===== 仕事について =====
+      - label: "勤務先名"
+        name: "companyName"
+        widget: "string"
+        i18n: true
+        hint: "() 【】等のカッコや☆等の装飾文字・絵文字は、検索結果で消去されることがあるため利用をお控えください"
+
+      - label: "求人タイトル（職種）"
+        name: "title"
+        widget: "string"
+        i18n: true
+        hint: "() 【】等のカッコや☆等の装飾文字・絵文字は、検索結果で消去されることがあるため利用をお控えください"
+
+      - label: "職種区分"
+        name: "jobCategory"
+        widget: "select"
+        required: false
+        default: "工場・製造"
+        i18n: duplicate
+        options:
+          - "営業・コールセンター"
+          - "事務・受付"
+          - "企画・マーケティング・管理"
+          - "販売・接客・サービス"
+          - "飲食店・フード"
+          - "旅行・ホテル・ブライダル"
+          - "レジャー・イベント・スポーツ"
+          - "工場・製造"
+          - "軽作業・倉庫作業"
+          - "配送・物流・交通"
+          - "ITエンジニア"
+          - "機械・電子エンジニア"
+          - "医薬品・素材・化学エンジニア"
+          - "Web・インターネット・ゲーム"
+          - "クリエイティブ・広告・印刷"
+          - "通訳"
+          - "アパレル・インテリア専門職"
+          - "医師・コメディカル"
+          - "保育士・教員・講師"
+          - "介護・福祉"
+          - "美容・理容・エステ"
+
+      - label: "雇用形態"
+        name: "employmentType"
+        widget: "select"
+        multiple: true
+        default: ["派遣社員"]
+        i18n: duplicate
+        options:
+          - "正社員"
+          - "アルバイト・パート"
+          - "契約社員"
+          - "業務委託"
+          - "新卒・インターン"
+          - "派遣社員"
+          - "紹介予定派遣"
+
+      - label: "ステータス"
+        name: "status"
+        widget: "select"
+        options: ["draft", "published", "closed"]
+        default: "draft"
+        i18n: duplicate
+
+      - label: "仕事内容"
+        name: "jobDescription"
+        widget: "text"
+        default: |
+          【主な職務内容】
+          【詳細】
+        i18n: true
+
+      - label: "この仕事のやりがい"
+        name: "jobAppeal"
+        widget: "text"
+        required: false
+        i18n: true
+
+      - label: "対象となる方"
+        name: "targetCandidates"
+        widget: "text"
+        required: false
+        default: |
+          【必須条件】
+          【あれば尚良い】
+          【補足】
+        i18n: true
+
+      - label: "求人の特徴"
+        name: "jobFeatures"
+        widget: "list"
+        required: false
+        i18n: duplicate
+        hint: "「追加」ボタンで特徴を自由に入力できます（例: 未経験歓迎、学歴不問、交通費支給 など）"
+
+      # ===== 働く条件について =====
+      - label: "勤務地（都道府県）"
+        name: "prefecture"
+        widget: "select"
+        default: "三重県"
+        i18n: duplicate
+        options:
+          - "北海道"
+          - "青森県"
+          - "岩手県"
+          - "宮城県"
+          - "秋田県"
+          - "山形県"
+          - "福島県"
+          - "茨城県"
+          - "栃木県"
+          - "群馬県"
+          - "埼玉県"
+          - "千葉県"
+          - "東京都"
+          - "神奈川県"
+          - "新潟県"
+          - "富山県"
+          - "石川県"
+          - "福井県"
+          - "山梨県"
+          - "長野県"
+          - "岐阜県"
+          - "静岡県"
+          - "愛知県"
+          - "三重県"
+          - "滋賀県"
+          - "京都府"
+          - "大阪府"
+          - "兵庫県"
+          - "奈良県"
+          - "和歌山県"
+          - "鳥取県"
+          - "島根県"
+          - "岡山県"
+          - "広島県"
+          - "山口県"
+          - "徳島県"
+          - "香川県"
+          - "愛媛県"
+          - "高知県"
+          - "福岡県"
+          - "佐賀県"
+          - "長崎県"
+          - "熊本県"
+          - "大分県"
+          - "宮崎県"
+          - "鹿児島県"
+          - "沖縄県"
+
+      - label: "勤務地（詳細住所）"
+        name: "locationDetail"
+        widget: "string"
+        required: false
+        i18n: true
+        hint: "市区町村以降の住所を入力してください"
+
+      - label: "交通手段・勤務地補足"
+        name: "transportationNotes"
+        widget: "text"
+        required: false
+        default: |
+          自動車通勤必須
+          〇〇駅（徒歩○分）
+        i18n: true
+
+      - label: "給与種別"
+        name: "salaryType"
+        widget: "select"
+        options: ["時給", "日給", "月給"]
+        i18n: duplicate
+
+      - label: "給与金額（下限）"
+        name: "salaryAmount"
+        widget: "number"
+        value_type: "int"
+        i18n: duplicate
+
+      - label: "給与金額（上限）"
+        name: "salaryUpperLimit"
+        widget: "number"
+        value_type: "int"
+        required: false
+        i18n: duplicate
+
+      - label: "給与補足・福利厚生・受動喫煙防止措置など"
+        name: "benefits"
+        widget: "text"
+        required: false
+        default: |
+          ・通勤手当（月5,000円まで。欠勤時には日割りになります。）
+          ・皆勤手当（月1万円。支給条件：無欠勤、無遅刻、早退なし）
+          ・フォークリフト資格手当（資格持ち限定。固定額。最初の2ヶ月間は1万円。3ヶ月目以降は1万5千円になります。入社日により期間は前後しますので、ご了承ください。）
+
+          〇 加入保険：雇用保険、労災保険、厚生年金、健康保険
+        i18n: true
+
+      - label: "勤務時間・休日"
+        name: "workingHours"
+        widget: "text"
+        required: false
+        default: |
+          【勤務時間】8:00～17：00
+          ※
+
+          【残業】
+          ※
+
+          【休日】土日祝（会社カレンダーに準ずる）
+        i18n: true
+
+      # ===== 日本語能力（維持） =====
+      - label: "日本語・会話 (Speaking)"
+        name: "japaneseSpeaking"
+        widget: "select"
+        options: ["問わない", "挨拶・簡単な指示", "日常会話", "ビジネス"]
+        default: "問わない"
+        i18n: true
+
+      - label: "日本語・読み (Reading)"
+        name: "japaneseReading"
+        widget: "select"
+        options: ["問わない", "ひらがな・カタカナ", "簡単な漢字", "一般的な文書"]
+        default: "問わない"
+        i18n: true
+
+      - label: "日本語・書き (Writing)"
+        name: "japaneseWriting"
+        widget: "select"
+        options: ["問わない", "ひらがな・カタカナ", "簡単なメモ", "ビジネスメール"]
+        default: "問わない"
+        i18n: true
+
+      - label: "日本語・JLPT目安 (任意)"
+        name: "japaneseJlpt"
+        widget: "select"
+        options: ["問わない", "N5以上", "N4以上", "N3以上", "N2以上", "N1以上"]
+        default: "問わない"
+        i18n: true
+
+      # ===== 応募・選考について =====
+      - label: "応募必要項目"
+        name: "requiredInfo"
+        widget: "select"
+        i18n: duplicate
+        default: "氏名・連絡先のみ"
+        options:
+          - "氏名・連絡先のみ"
+          - "基本情報"
+          - "基本情報 + 職務経歴"
+
+      - label: "電話番号を入力必須にする"
+        name: "requirePhone"
+        widget: "boolean"
+        default: false
+        i18n: duplicate
+
+      - label: "応募受付の電話番号"
+        name: "applicationPhone"
+        widget: "string"
+        required: false
+        i18n: duplicate
+        hint: "数字とハイフンのみで入力してください。"
+
+      - label: "選考について"
+        name: "selectionProcess"
+        widget: "text"
+        required: false
+        i18n: true
+
+      # ===== その他 =====
+      - label: "メイン画像"
+        name: "image"
+        widget: "image"
+        required: false
+        i18n: duplicate
+
+      - label: "掲載日"
+        name: "datePosted"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        time_format: false
+        type: "date"
+        i18n: duplicate
+
+      - label: "掲載終了日"
+        name: "validThrough"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        time_format: false
+        type: "date"
+        required: false
+        i18n: duplicate

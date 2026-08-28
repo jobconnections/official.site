@@ -5,7 +5,8 @@ import JobCard from '../../../components/JobCard.astro';
 import { getCollection } from 'astro:content';
 
 const allJobs = await getCollection('jobs', (entry) => {
-  return entry.id.endsWith('/pt-br') && entry.data.status === 'published';
+  const isPtBr = entry.id.startsWith('pt-br/') || entry.id.startsWith('pt-br\\') || entry.id.endsWith('/pt-br.md') || entry.id.endsWith('/pt-br');
+  return isPtBr && entry.data.status === 'published';
 });
 
 const sortedJobs = allJobs.sort((a, b) => b.data.datePosted.valueOf() - a.data.datePosted.valueOf());
@@ -31,7 +32,7 @@ const sortedJobs = allJobs.sort((a, b) => b.data.datePosted.valueOf() - a.data.d
                 ) : (
                     sortedJobs.map(job => (
                         <div class="job-card-item" 
-                             data-location={job.data.location}
+                             data-location={`${job.data.prefecture} ${job.data.locationDetail || ''}`}
                              data-salary-type={job.data.salaryType}
                              data-salary-amount={job.data.salaryAmount}
                              data-japanese-speaking={job.data.japaneseSpeaking || ''}>
