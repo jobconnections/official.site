@@ -35,16 +35,10 @@ collections:
       - {label: "勤務地", name: "location", widget: "string", i18n: true}
       - {label: "給与種別", name: "salaryType", widget: "select", options: ["時給", "日給", "月給"], i18n: duplicate}
       - {label: "金額", name: "salaryAmount", widget: "number", value_type: "int", i18n: duplicate}
-      - label: "日本語要件 (多言語のみ)"
-        name: "japanese"
-        widget: "object"
-        required: false
-        i18n: true
-        fields:
-          - {label: "会話 (Speaking)", name: "speaking", widget: "select", options: ["不問", "挨拶・簡単な指示", "日常会話", "ビジネス"], default: "不問"}
-          - {label: "読み (Reading)", name: "reading", widget: "select", options: ["不問", "ひらがな・カタカナ", "簡単な漢字", "一般的な文書"], default: "不問"}
-          - {label: "書き (Writing)", name: "writing", widget: "select", options: ["不問", "ひらがな・カタカナ", "簡単なメモ", "ビジネスメール"], default: "不問"}
-          - {label: "JLPT目安 (任意)", name: "jlpt", widget: "select", options: ["不問", "N5以上", "N4以上", "N3以上", "N2以上", "N1以上"], default: "不問", required: false}
+      - {label: "日本語・会話 (Speaking)", name: "japaneseSpeaking", widget: "select", options: ["問わない", "挨拶・簡単な指示", "日常会話", "ビジネス"], default: "問わない", i18n: true}
+      - {label: "日本語・読み (Reading)", name: "japaneseReading", widget: "select", options: ["問わない", "ひらがな・カタカナ", "簡単な漢字", "一般的な文書"], default: "問わない", i18n: true}
+      - {label: "日本語・書き (Writing)", name: "japaneseWriting", widget: "select", options: ["問わない", "ひらがな・カタカナ", "簡単なメモ", "ビジネスメール"], default: "問わない", i18n: true}
+      - {label: "日本語・JLPT目安 (任意)", name: "japaneseJlpt", widget: "select", options: ["問わない", "N5以上", "N4以上", "N3以上", "N2以上", "N1以上"], default: "問わない", i18n: true}
       - {label: "メイン画像", name: "image", widget: "image", required: false, i18n: duplicate}
       - {label: "掲載日", name: "datePosted", widget: "datetime", format: "YYYY-MM-DD", time_format: false, type: "date", i18n: duplicate}
       - {label: "掲載終了日", name: "validThrough", widget: "datetime", format: "YYYY-MM-DD", time_format: false, type: "date", required: false, i18n: duplicate}

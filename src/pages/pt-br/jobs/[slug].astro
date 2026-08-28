@@ -135,7 +135,7 @@ const getPtWriting = (val?: string) => {
                         </div>
                     </div>
 
-                    {job.data.japanese && (
+                    {(job.data.japaneseSpeaking || job.data.japaneseReading || job.data.japaneseWriting) && (
                         <div class="mb-10 p-6 bg-blue-50/50 rounded-xl border border-blue-100">
                             <h3 class="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                                 <i class="fa-solid fa-language text-primary text-lg"></i> Requisitos de Japonês
@@ -145,24 +145,24 @@ const getPtWriting = (val?: string) => {
                                     <p class="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1.5">
                                         <i class="fa-solid fa-comments text-primary"></i> Conversação
                                     </p>
-                                    <p class="text-gray-900 font-bold text-sm">{getPtSpeaking(job.data.japanese.speaking)}</p>
+                                    <p class="text-gray-900 font-bold text-sm">{getPtSpeaking(job.data.japaneseSpeaking)}</p>
                                 </div>
                                 <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-50">
                                     <p class="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1.5">
                                         <i class="fa-solid fa-book-open text-primary"></i> Leitura
                                     </p>
-                                    <p class="text-gray-900 font-bold text-sm">{getPtReading(job.data.japanese.reading)}</p>
+                                    <p class="text-gray-900 font-bold text-sm">{getPtReading(job.data.japaneseReading)}</p>
                                 </div>
                                 <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-50">
                                     <p class="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1.5">
                                         <i class="fa-solid fa-pen-nib text-primary"></i> Escrita
                                     </p>
-                                    <p class="text-gray-900 font-bold text-sm">{getPtWriting(job.data.japanese.writing)}</p>
+                                    <p class="text-gray-900 font-bold text-sm">{getPtWriting(job.data.japaneseWriting)}</p>
                                 </div>
                             </div>
-                            {job.data.japanese.jlpt && job.data.japanese.jlpt !== '不問' && (
+                            {job.data.japaneseJlpt && job.data.japaneseJlpt !== '問わない' && (
                                 <p class="text-xs text-gray-600 mt-3 pt-3 border-t border-blue-100 flex items-center gap-2">
-                                    <span class="font-bold text-primary">Equivalente JLPT:</span> {job.data.japanese.jlpt}
+                                    <span class="font-bold text-primary">Equivalente JLPT:</span> {job.data.japaneseJlpt}
                                 </p>
                             )}
                         </div>

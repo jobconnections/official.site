@@ -46,8 +46,8 @@ const formatDate = (date: Date) => {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 };
 const getSpeakingText = () => {
-  if (!job.data.japanese) return null;
-  const speaking = job.data.japanese.speaking;
+  const speaking = job.data.japaneseSpeaking;
+  if (!speaking) return null;
   if (lang === 'en') {
     if (speaking === '挨拶・簡単な指示') return 'Basic / Greetings';
     if (speaking === '日常会話') return 'Daily Conversation';

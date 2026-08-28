@@ -5,11 +5,10 @@ employmentType: "正社員"
 location: "Mie Yokkaichi"
 salaryType: "時給"
 salaryAmount: 1300
-japanese:
-  speaking: "挨拶・簡単な指示"
-  reading: "ひらがな・カタカナ"
-  writing: "不問"
-  jlpt: "不問"
+japaneseSpeaking: "挨拶・簡単な指示"
+japaneseReading: "ひらがな・カタカナ"
+japaneseWriting: "問わない"
+japaneseJlpt: "問わない"
 datePosted: 2026-08-06
 ---
 
