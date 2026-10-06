@@ -7,26 +7,27 @@
     <style>
       /* 日本語ロケール無効化時のスタイル */
       .jp-disabled-container {
-        opacity: 0.55 !important;
+        opacity: 0.5 !important;
         pointer-events: none !important;
         cursor: not-allowed !important;
         position: relative;
-        background: rgba(243, 244, 246, 0.4);
-        border-radius: 8px;
-        padding: 6px 8px;
-        margin-bottom: 8px;
+        background: rgba(243, 244, 246, 0.4) !important;
+        border-radius: 8px !important;
+        padding: 6px 10px !important;
+        margin-bottom: 8px !important;
+        border: 1px dashed #d1d5db !important;
       }
       .jp-disabled-badge {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
         background: #fee2e2;
         color: #991b1b;
         font-size: 11px;
         font-weight: 700;
-        padding: 3px 8px;
-        border-radius: 4px;
-        margin-bottom: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        margin-bottom: 8px;
         border: 1px solid #fecaca;
         pointer-events: auto;
       }
@@ -39,6 +40,26 @@
     <!-- 日本語力項目のロケール制御＆自動連動スクリプト -->
     <script>
       (function() {
+        // フィールド定義
+        const FIELD_CONFIGS = {
+          speaking: {
+            labelMatch: t => t.includes('会話') || t.includes('Speaking'),
+            options: ['問わない', '挨拶・簡単な指示', '日常会話', 'ビジネス']
+          },
+          reading: {
+            labelMatch: t => t.includes('読み') || t.includes('Reading'),
+            options: ['問わない', 'ひらがな・カタカナ', '簡単な漢字', '一般的な文書']
+          },
+          writing: {
+            labelMatch: t => t.includes('書き') || t.includes('Writing'),
+            options: ['問わない', 'ひらがな・カタカナ', '簡単なメモ', 'ビジネスメール']
+          },
+          jlpt: {
+            labelMatch: t => t.includes('JLPT'),
+            options: ['問わない', 'N5以上', 'N4以上', 'N3以上', 'N2以上', 'N1以上']
+          }
+        };
+
         // 英語・ポルトガル語間で同期する日本語力項目の最新状態
         const syncedValues = {
           speaking: null,
@@ -47,17 +68,13 @@
           jlpt: null
         };
 
-        const JP_FIELD_DEFS = [
-          { key: 'speaking', match: text => text.includes('会話') || text.includes('Speaking') },
-          { key: 'reading', match: text => text.includes('読み') || text.includes('Reading') },
-          { key: 'writing', match: text => text.includes('書き') || text.includes('Writing') },
-          { key: 'jlpt', match: text => text.includes('JLPT') }
-        ];
-
         let isSyncing = false;
+        let lastActiveLocale = 'en';
 
         // ペインまたはタブのロケール判定
         function getPaneLocale(paneEl) {
+          if (!paneEl) return null;
+
           // 1. aria-label (例: Edit Japanese Content, Edit Portuguese (Brazil) Content)
           const ariaLabel = (paneEl.getAttribute('aria-label') || '').toLowerCase();
           if (ariaLabel.includes('japan')) return 'ja';
@@ -65,9 +82,9 @@
           if (ariaLabel.includes('portug')) return 'pt-br';
 
           // 2. ペイン内部の選択中ラジオボタン (Switch Locale)
-          const checkedInPane = paneEl.querySelector('[role="radiogroup"] [role="radio"][aria-checked="true"], [role="radiogroup"] [aria-selected="true"]');
+          const checkedInPane = paneEl.querySelector('[role="radiogroup"] [role="radio"][aria-checked="true"], [role="radiogroup"] [aria-selected="true"], fieldset input[type="radio"]:checked');
           if (checkedInPane) {
-            const text = (checkedInPane.textContent || '').toLowerCase();
+            const text = (checkedInPane.textContent || checkedInPane.value || '').toLowerCase();
             if (text.includes('japan')) return 'ja';
             if (text.includes('english')) return 'en';
             if (text.includes('portug')) return 'pt-br';
@@ -85,43 +102,117 @@
           return null;
         }
 
-        // ペイン内のフィールド要素を処理
-        function processPanes() {
-          const editPanes = document.querySelectorAll('[role="group"][aria-label*="Content"], [role="group"][aria-label*="Edit"], main');
-          if (editPanes.length === 0) return;
-
-          editPanes.forEach(pane => {
-            const locale = getPaneLocale(pane);
-            if (!locale) return;
-
-            JP_FIELD_DEFS.forEach(def => {
-              // ラベル要素を探す
-              const labels = pane.querySelectorAll('label, [role="heading"], legend, span');
-              let targetContainer = null;
-              for (const l of labels) {
-                if (def.match(l.textContent || '')) {
-                  let parent = l.parentElement;
-                  while (parent && parent !== pane && !parent.querySelector('input[type="radio"], [role="radio"], select')) {
-                    parent = parent.parentElement;
+        // ペイン内の指定フィールドコンテナを取得
+        function getFieldContainer(pane, config) {
+          const allLabels = pane.querySelectorAll('label, [role="heading"], legend, span, div');
+          for (const el of allLabels) {
+            const text = el.textContent || '';
+            // 直下のテキストがマッチするか
+            if (el.children.length <= 2 && config.labelMatch(text)) {
+              let curr = el;
+              while (curr && curr !== pane) {
+                // コントロールを含むか
+                if (curr.querySelector('[role="radio"], input[type="radio"], [role="combobox"], select, button')) {
+                  // 他の日本語力ラベルを含まないことを確認
+                  const otherKeys = Object.keys(FIELD_CONFIGS).filter(k => FIELD_CONFIGS[k] !== config);
+                  const hasOther = otherKeys.some(k => FIELD_CONFIGS[k].labelMatch(curr.textContent || ''));
+                  if (!hasOther) {
+                    return curr;
                   }
-                  if (parent && parent !== pane) {
-                    targetContainer = parent;
+                }
+                curr = curr.parentElement;
+              }
+            }
+          }
+          return null;
+        }
+
+        // フィールドから現在選択されている値を取得
+        function getFieldValue(container, key) {
+          if (!container) return null;
+          const config = FIELD_CONFIGS[key];
+
+          if (key === 'jlpt') {
+            // コンボボックス（またはボタン）
+            const combobox = container.querySelector('[role="combobox"], button');
+            if (combobox) {
+              const text = (combobox.textContent || '').trim();
+              const matched = config.options.find(opt => text.includes(opt));
+              if (matched) return matched;
+            }
+            const select = container.querySelector('select');
+            if (select) {
+              return select.value;
+            }
+          } else {
+            // ラジオボタン
+            const checkedRadio = container.querySelector('input[type="radio"]:checked, [role="radio"][aria-checked="true"]');
+            if (checkedRadio) {
+              const parent = checkedRadio.closest('label') || checkedRadio.parentElement || checkedRadio;
+              const text = (checkedRadio.value || parent.textContent || '').trim();
+              const matched = config.options.find(opt => text.includes(opt));
+              if (matched) return matched;
+            }
+          }
+          return null;
+        }
+
+        // フィールドに値を反映
+        function setFieldValue(container, key, targetValue) {
+          if (!container || !targetValue) return;
+          const config = FIELD_CONFIGS[key];
+
+          if (key === 'jlpt') {
+            const combobox = container.querySelector('[role="combobox"], button');
+            if (combobox) {
+              const currentText = (combobox.textContent || '').trim();
+              if (currentText.includes(targetValue)) return; // 既に一致
+
+              // ポップアップを開く
+              combobox.click();
+              setTimeout(() => {
+                const options = document.querySelectorAll('[role="option"], [role="menuitem"], [role="menuitemradio"], li[role="option"]');
+                let found = false;
+                for (const opt of options) {
+                  if ((opt.textContent || '').trim() === targetValue) {
+                    opt.click();
+                    found = true;
                     break;
                   }
                 }
-              }
+                if (!found) {
+                  // 見つからない場合はもう一度クリックして閉じる
+                  combobox.click();
+                }
+              }, 120);
+              return;
+            }
 
-              if (!targetContainer) return;
-
-              if (locale === 'ja') {
-                // 日本語の場合：選択不可
-                applyJapaneseDisabled(targetContainer);
-              } else if (locale === 'en' || locale === 'pt-br') {
-                // 英語・ポルトガル語の場合：有効化＆同期設定
-                setupLocaleSync(targetContainer, def.key, locale);
+            const select = container.querySelector('select');
+            if (select && select.value !== targetValue) {
+              select.value = targetValue;
+              select.dispatchEvent(new Event('change', { bubbles: true }));
+              select.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+          } else {
+            const radios = container.querySelectorAll('input[type="radio"], [role="radio"]');
+            for (const r of radios) {
+              const parent = r.closest('label') || r.parentElement || r;
+              const text = (r.value || parent.textContent || '').trim();
+              if (text.includes(targetValue)) {
+                const isChecked = r.checked || r.getAttribute('aria-checked') === 'true';
+                if (!isChecked) {
+                  r.click();
+                  if (r instanceof HTMLInputElement) {
+                    r.checked = true;
+                    r.dispatchEvent(new Event('change', { bubbles: true }));
+                    r.dispatchEvent(new Event('input', { bubbles: true }));
+                  }
+                }
+                break;
               }
-            });
-          });
+            }
+          }
         }
 
         // 日本語タブでの無効化
@@ -130,9 +221,10 @@
             container.classList.add('jp-disabled-container');
           }
 
-          const controls = container.querySelectorAll('input, select, button');
+          const controls = container.querySelectorAll('input, select, button, [role="radio"], [role="combobox"]');
           controls.forEach(ctrl => {
             ctrl.disabled = true;
+            ctrl.style.pointerEvents = 'none';
           });
 
           if (!container.querySelector('.jp-disabled-badge')) {
@@ -148,141 +240,152 @@
           }
         }
 
-        // 英語・ポルトガル語での同期処理
-        function setupLocaleSync(container, key, currentLocale) {
-          // 日本語から切り替わった場合、無効化を解除
+        // 英語・ポルトガル語での有効化 & 初期値同期
+        function setupLocaleField(container, key, locale) {
           if (container.classList.contains('jp-disabled-container')) {
             container.classList.remove('jp-disabled-container');
             const badge = container.querySelector('.jp-disabled-badge');
             if (badge) badge.remove();
-            container.querySelectorAll('input, select, button').forEach(ctrl => {
+            container.querySelectorAll('input, select, button, [role="radio"], [role="combobox"]').forEach(ctrl => {
               ctrl.disabled = false;
+              ctrl.style.pointerEvents = 'auto';
             });
           }
 
-          // すでに記憶された値があれば初期反映
-          if (syncedValues[key]) {
-            setValueToContainer(container, syncedValues[key]);
-          } else {
-            // 現在選択されている値を初期値として記憶
-            const currentVal = getValueFromContainer(container);
-            if (currentVal && currentVal !== '問わない') {
-              syncedValues[key] = currentVal;
-            }
+          // 現在選択されている値があれば記憶
+          const currentVal = getFieldValue(container, key);
+          if (currentVal && currentVal !== '問わない' && !syncedValues[key]) {
+            syncedValues[key] = currentVal;
           }
 
-          if (container.dataset.syncBound === 'true') return;
-          container.dataset.syncBound = 'true';
-
-          // ユーザーの選択イベントを検知
-          container.addEventListener('change', () => {
-            if (isSyncing) return;
-            handleUserSelection(container, key, currentLocale);
-          }, true);
-
-          container.addEventListener('click', () => {
-            if (isSyncing) return;
-            setTimeout(() => {
-              handleUserSelection(container, key, currentLocale);
-            }, 60);
-          }, true);
-        }
-
-        function handleUserSelection(container, key, fromLocale) {
-          const val = getValueFromContainer(container);
-          if (!val) return;
-          syncedValues[key] = val;
-
-          // もう一方の言語ペインに即時同期
-          const otherLocale = fromLocale === 'en' ? 'pt-br' : 'en';
-          syncToOtherPane(key, val, otherLocale);
-        }
-
-        function getValueFromContainer(container) {
-          // ラジオボタン
-          const checkedRadio = container.querySelector('input[type="radio"]:checked, [role="radio"][aria-checked="true"]');
-          if (checkedRadio) {
-            const labelEl = checkedRadio.closest('label') || checkedRadio;
-            return (checkedRadio.value || labelEl.textContent || '').trim();
+          // すでに他方から記憶されている値があり、未反映なら反映
+          if (syncedValues[key] && currentVal !== syncedValues[key]) {
+            setFieldValue(container, key, syncedValues[key]);
           }
-          // セレクトボックス
-          const select = container.querySelector('select');
-          if (select) {
-            return select.value;
-          }
-          return null;
         }
 
-        function setValueToContainer(container, value) {
+        // もう一方の言語ペインに値を同期
+        function syncToOtherLocale(key, value, targetLocale) {
           if (!value) return;
-
-          // ラジオボタンの探索と選択
-          const radios = container.querySelectorAll('input[type="radio"], [role="radio"]');
-          for (const r of radios) {
-            const labelEl = r.closest('label') || r;
-            const text = (r.value || labelEl.textContent || '').trim();
-            if (text === value || (value.includes(text) && text.length >= 2) || (text.includes(value) && value.length >= 2)) {
-              const isChecked = r.checked || r.getAttribute('aria-checked') === 'true';
-              if (!isChecked) {
-                r.click();
-                r.checked = true;
-                r.dispatchEvent(new Event('change', { bubbles: true }));
-              }
-              return;
-            }
-          }
-
-          // セレクトボックスの探索と選択
-          const select = container.querySelector('select');
-          if (select && select.value !== value) {
-            for (let i = 0; i < select.options.length; i++) {
-              if (select.options[i].value === value || select.options[i].text === value) {
-                select.selectedIndex = i;
-                select.dispatchEvent(new Event('change', { bubbles: true }));
-                select.dispatchEvent(new Event('input', { bubbles: true }));
-                break;
-              }
-            }
-          }
-        }
-
-        function syncToOtherPane(key, value, targetLocale) {
           isSyncing = true;
           try {
             const editPanes = document.querySelectorAll('[role="group"][aria-label*="Content"], [role="group"][aria-label*="Edit"], main');
             editPanes.forEach(pane => {
               const locale = getPaneLocale(pane);
               if (locale === targetLocale) {
-                const def = JP_FIELD_DEFS.find(d => d.key === key);
-                if (!def) return;
-                const labels = pane.querySelectorAll('label, [role="heading"], legend, span');
-                for (const l of labels) {
-                  if (def.match(l.textContent || '')) {
-                    let parent = l.parentElement;
-                    while (parent && parent !== pane && !parent.querySelector('input[type="radio"], [role="radio"], select')) {
-                      parent = parent.parentElement;
-                    }
-                    if (parent && parent !== pane) {
-                      setValueToContainer(parent, value);
-                      break;
-                    }
-                  }
+                const config = FIELD_CONFIGS[key];
+                const container = getFieldContainer(pane, config);
+                if (container) {
+                  setFieldValue(container, key, value);
                 }
               }
             });
           } finally {
-            setTimeout(() => { isSyncing = false; }, 120);
+            setTimeout(() => { isSyncing = false; }, 250);
           }
         }
 
-        // DOM監視 & ポーリングのハイブリッド起動
+        // ペインの処理メインループ
+        function processPanes() {
+          const editPanes = document.querySelectorAll('[role="group"][aria-label*="Content"], [role="group"][aria-label*="Edit"], main');
+          if (editPanes.length === 0) return;
+
+          editPanes.forEach(pane => {
+            const locale = getPaneLocale(pane);
+            if (!locale) return;
+
+            if (locale === 'en' || locale === 'pt-br') {
+              lastActiveLocale = locale;
+            }
+
+            Object.keys(FIELD_CONFIGS).forEach(key => {
+              const config = FIELD_CONFIGS[key];
+              const container = getFieldContainer(pane, config);
+              if (!container) return;
+
+              if (locale === 'ja') {
+                applyJapaneseDisabled(container);
+              } else if (locale === 'en' || locale === 'pt-br') {
+                setupLocaleField(container, key, locale);
+              }
+            });
+          });
+        }
+
+        // グローバルクリック監視（ユーザー操作の確実なキャッチ）
+        document.addEventListener('click', (e) => {
+          if (isSyncing) return;
+          const target = e.target;
+
+          // 1. JLPT ドロップダウンオプションのクリック
+          const option = target.closest('[role="option"], [role="menuitemradio"], [role="menuitem"], li[role="option"]');
+          if (option) {
+            const text = (option.textContent || '').trim();
+            if (FIELD_CONFIGS.jlpt.options.includes(text)) {
+              syncedValues.jlpt = text;
+              const targetLocale = lastActiveLocale === 'en' ? 'pt-br' : 'en';
+              syncToOtherLocale('jlpt', text, targetLocale);
+              return;
+            }
+          }
+
+          // 2. ラジオボタン（会話・読み・書き）のクリック
+          const radio = target.closest('[role="radio"], label, input[type="radio"]');
+          const pane = target.closest('[role="group"][aria-label*="Content"], [role="group"][aria-label*="Edit"], main');
+          const locale = pane ? getPaneLocale(pane) : null;
+
+          if (radio && locale && (locale === 'en' || locale === 'pt-br')) {
+            lastActiveLocale = locale;
+            setTimeout(() => {
+              Object.keys(FIELD_CONFIGS).forEach(key => {
+                if (key === 'jlpt') return;
+                const config = FIELD_CONFIGS[key];
+                const container = getFieldContainer(pane, config);
+                if (container && container.contains(radio)) {
+                  const val = getFieldValue(container, key);
+                  if (val) {
+                    syncedValues[key] = val;
+                    const targetLocale = locale === 'en' ? 'pt-br' : 'en';
+                    syncToOtherLocale(key, val, targetLocale);
+                  }
+                }
+              });
+            }, 60);
+          }
+        }, true);
+
+        // セレクト要素の変更イベント
+        document.addEventListener('change', (e) => {
+          if (isSyncing) return;
+          const target = e.target;
+          const pane = target.closest('[role="group"][aria-label*="Content"], [role="group"][aria-label*="Edit"], main');
+          const locale = pane ? getPaneLocale(pane) : null;
+
+          if (locale && (locale === 'en' || locale === 'pt-br')) {
+            lastActiveLocale = locale;
+            Object.keys(FIELD_CONFIGS).forEach(key => {
+              const config = FIELD_CONFIGS[key];
+              const container = getFieldContainer(pane, config);
+              if (container && container.contains(target)) {
+                const val = getFieldValue(container, key);
+                if (val) {
+                  syncedValues[key] = val;
+                  const targetLocale = locale === 'en' ? 'pt-br' : 'en';
+                  syncToOtherLocale(key, val, targetLocale);
+                }
+              }
+            });
+          }
+        }, true);
+
+        // DOM監視 & 定期チェック
         const observer = new MutationObserver(() => {
           processPanes();
         });
 
         function start() {
           observer.observe(document.body, { childList: true, subtree: true });
-          setInterval(processPanes, 600);
+          setInterval(processPanes, 500);
           processPanes();
         }
 
