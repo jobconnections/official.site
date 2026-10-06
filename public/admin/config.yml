@@ -28,6 +28,27 @@ collections:
     create: true
     i18n: true
     slug: "JOB{{year}}{{month}}{{day}}{{hour}}{{minute}}{{second}}"
+    summary: "【{{status}}】{{title}}（{{prefecture}} / {{salaryType}}{{salaryAmount}}円〜）"
+    sortable_fields:
+      - "datePosted"
+      - "title"
+      - "prefecture"
+      - "salaryAmount"
+    view_filters:
+      - label: "公開中 (published)"
+        field: "status"
+        pattern: "published"
+      - label: "下書き (draft)"
+        field: "status"
+        pattern: "draft"
+      - label: "募集終了 (closed)"
+        field: "status"
+        pattern: "closed"
+    view_groups:
+      - label: "ステータス別"
+        field: "status"
+      - label: "勤務地別"
+        field: "prefecture"
     fields:
       # ===== 仕事について =====
       - label: "勤務先名"
@@ -121,7 +142,7 @@ collections:
         name: "jobFeatures"
         widget: "list"
         required: false
-        i18n: duplicate
+        i18n: true
         hint: "「追加」ボタンで特徴を自由に入力できます（例: 未経験歓迎、学歴不問、交通費支給 など）"
 
       # ===== 働く条件について =====
