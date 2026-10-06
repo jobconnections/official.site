@@ -133,9 +133,16 @@ const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
                         </div>
                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2 leading-tight">{job.data.title}</h1>
                         <p class="text-sm text-gray-600 mb-2">{job.data.companyName}</p>
-                        <p class="text-sm text-gray-500 flex items-center gap-2">
-                            <i class="fa-regular fa-clock"></i> 掲載日: {formatDateISO(job.data.datePosted)}
-                        </p>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-regular fa-clock"></i> 掲載日: {formatDateISO(job.data.datePosted)}
+                            </span>
+                            {job.data.validThrough && (
+                                <span class="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                                    <i class="fa-regular fa-calendar-check"></i> 応募締切: {formatDateISO(job.data.validThrough)}
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     <!-- 募集条件ハイライト -->
@@ -180,6 +187,40 @@ const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
                                     {feature}
                                 </span>
                             ))}
+                        </div>
+                    )}
+
+                    <!-- 必要とされる日本語能力 -->
+                    {(job.data.japaneseSpeaking || job.data.japaneseReading || job.data.japaneseWriting || (job.data.japaneseJlpt && job.data.japaneseJlpt !== '問わない')) && (
+                        <div class="mb-10 p-6 bg-blue-50/50 rounded-xl border border-blue-100">
+                            <h3 class="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-language text-primary text-lg"></i> 必要とされる日本語能力
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-50">
+                                    <p class="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-comments text-primary"></i> 会話 (Speaking)
+                                    </p>
+                                    <p class="text-gray-900 font-bold text-sm">{job.data.japaneseSpeaking || '問わない'}</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-50">
+                                    <p class="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-book-open text-primary"></i> 読み (Reading)
+                                    </p>
+                                    <p class="text-gray-900 font-bold text-sm">{job.data.japaneseReading || '問わない'}</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-50">
+                                    <p class="text-xs font-bold text-gray-500 mb-1 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-pen-nib text-primary"></i> 書き (Writing)
+                                    </p>
+                                    <p class="text-gray-900 font-bold text-sm">{job.data.japaneseWriting || '問わない'}</p>
+                                </div>
+                            </div>
+                            {job.data.japaneseJlpt && job.data.japaneseJlpt !== '問わない' && (
+                                <p class="text-xs text-gray-600 mt-3 pt-3 border-t border-blue-100 flex items-center gap-2">
+                                    <span class="font-bold text-primary">JLPT目安:</span> {job.data.japaneseJlpt}
+                                </p>
+                            )}
                         </div>
                     )}
 
@@ -240,13 +281,28 @@ const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
                         </div>
                     )}
 
-                    <!-- 選考について -->
-                    {job.data.selectionProcess && (
+                    <!-- 選考・応募要項 -->
+                    {(job.data.selectionProcess || job.data.requiredInfo) && (
                         <div class="mb-10">
                             <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 pb-2 border-b-2 border-primary" style="border-bottom-width: 3px;">
-                                <i class="fa-solid fa-clipboard-check text-primary"></i> 選考について
+                                <i class="fa-solid fa-clipboard-check text-primary"></i> 選考・応募について
                             </h2>
-                            <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.selectionProcess}</div>
+                            <div class="space-y-4">
+                                {job.data.requiredInfo && (
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-600 mb-1">応募時の必要書類・項目</p>
+                                        <div class="inline-block px-3 py-1 bg-gray-100 text-gray-800 text-sm font-semibold rounded-md border border-gray-200">
+                                            {job.data.requiredInfo}
+                                        </div>
+                                    </div>
+                                )}
+                                {job.data.selectionProcess && (
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-600 mb-1">選考フロー</p>
+                                        <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.selectionProcess}</div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -258,6 +314,13 @@ const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
                             <a href="/apply/" class="w-full bg-primary hover:bg-blue-800 text-white text-center py-4 rounded-full font-bold shadow-md transition flex justify-center items-center gap-2">
                                 <i class="fa-solid fa-paper-plane"></i> フォームから応募する
                             </a>
+
+                            <!-- 電話応募ボタン -->
+                            {job.data.applicationPhone && (
+                                <a href={`tel:${job.data.applicationPhone.replace(/[^0-9+]/g, '')}`} class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-center py-3.5 rounded-full font-bold shadow-sm transition flex justify-center items-center gap-2">
+                                    <i class="fa-solid fa-phone text-lg"></i> 電話で応募する ({job.data.applicationPhone})
+                                </a>
+                            )}
                             
                             <!-- WhatsApp -->
                             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white text-center py-3 rounded-full font-bold shadow-sm transition flex justify-center items-center gap-2">

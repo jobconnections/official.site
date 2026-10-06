@@ -95,25 +95,32 @@ const whatsappUrl = 'https://wa.me/819000000000'; // FIXME
 const lineUrl = 'https://line.me/R/ti/p/@placeholder'; // FIXME
 const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
 
-const getEnSpeaking = (val?: string) => {
+const getEnSpeaking = (val?: string | null) => {
   if (val === '挨拶・簡単な指示') return 'Basic Greetings & Simple Commands';
   if (val === '日常会話') return 'Daily Conversation';
   if (val === 'ビジネス') return 'Business / Fluent';
   return 'Not Required';
 };
 
-const getEnReading = (val?: string) => {
+const getEnReading = (val?: string | null) => {
   if (val === 'ひらがな・カタカナ') return 'Hiragana & Katakana only';
   if (val === '簡単な漢字') return 'Simple Kanji & Site Signs';
   if (val === '一般的な文書') return 'General Texts & Work Manuals';
   return 'Not Required';
 };
 
-const getEnWriting = (val?: string) => {
+const getEnWriting = (val?: string | null) => {
   if (val === 'ひらがな・カタカナ') return 'Hiragana & Katakana only';
   if (val === '簡単なメモ') return 'Simple Notes & Messages';
   if (val === 'ビジネスメール') return 'Business Emails & Reports';
   return 'Not Required';
+};
+
+const getEnRequiredInfo = (val?: string | null) => {
+  if (val === '氏名・連絡先のみ') return 'Name & Contact Information only';
+  if (val === '基本情報') return 'Basic Profile & Contact Details';
+  if (val === '基本情報 + 職務経歴') return 'Basic Profile + Work History / Resume';
+  return val;
 };
 ---
 
@@ -149,9 +156,16 @@ const getEnWriting = (val?: string) => {
                         </div>
                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2 leading-tight">{job.data.title}</h1>
                         <p class="text-sm text-gray-600 mb-2">{job.data.companyName}</p>
-                        <p class="text-sm text-gray-500 flex items-center gap-2">
-                            <i class="fa-regular fa-clock"></i> Posted: {formatDateISO(job.data.datePosted)}
-                        </p>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-regular fa-clock"></i> Posted: {formatDateISO(job.data.datePosted)}
+                            </span>
+                            {job.data.validThrough && (
+                                <span class="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                                    <i class="fa-regular fa-calendar-check"></i> Deadline: {formatDateISO(job.data.validThrough)}
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     <!-- Summary cards -->
@@ -290,13 +304,28 @@ const getEnWriting = (val?: string) => {
                         </div>
                     )}
 
-                    <!-- Selection Process -->
-                    {job.data.selectionProcess && (
+                    <!-- Selection & Application Requirements -->
+                    {(job.data.selectionProcess || job.data.requiredInfo) && (
                         <div class="mb-10">
                             <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 pb-2 border-b-2 border-primary" style="border-bottom-width: 3px;">
-                                <i class="fa-solid fa-clipboard-check text-primary"></i> Selection Process
+                                <i class="fa-solid fa-clipboard-check text-primary"></i> Application & Selection Process
                             </h2>
-                            <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.selectionProcess}</div>
+                            <div class="space-y-4">
+                                {job.data.requiredInfo && (
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-600 mb-1">Required Documents / Information</p>
+                                        <div class="inline-block px-3 py-1 bg-gray-100 text-gray-800 text-sm font-semibold rounded-md border border-gray-200">
+                                            {getEnRequiredInfo(job.data.requiredInfo)}
+                                        </div>
+                                    </div>
+                                )}
+                                {job.data.selectionProcess && (
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-600 mb-1">Selection Flow</p>
+                                        <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{job.data.selectionProcess}</div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -304,15 +333,29 @@ const getEnWriting = (val?: string) => {
                         <h3 class="text-center font-bold text-gray-900 mb-6">Apply or Contact Us</h3>
                         
                         <div class="flex flex-col gap-4 max-w-sm mx-auto">
+                            <!-- Apply via Form -->
                             <a href="/en/apply/" class="w-full bg-primary hover:bg-blue-800 text-white text-center py-4 rounded-full font-bold shadow-md transition flex justify-center items-center gap-2">
                                 <i class="fa-solid fa-paper-plane"></i> Apply via Form
                             </a>
+
+                            <!-- Call to Apply -->
+                            {job.data.applicationPhone && (
+                                <a href={`tel:${job.data.applicationPhone.replace(/[^0-9+]/g, '')}`} class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-center py-3.5 rounded-full font-bold shadow-sm transition flex justify-center items-center gap-2">
+                                    <i class="fa-solid fa-phone text-lg"></i> Call to Apply ({job.data.applicationPhone})
+                                </a>
+                            )}
+                            
+                            <!-- WhatsApp -->
                             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white text-center py-3 rounded-full font-bold shadow-sm transition flex justify-center items-center gap-2">
                                 <i class="fa-brands fa-whatsapp text-xl"></i> Contact on WhatsApp
                             </a>
+                            
+                            <!-- LINE -->
                             <a href={lineUrl} target="_blank" rel="noopener noreferrer" class="w-full bg-[#06C755] hover:bg-[#05B34C] text-white text-center py-3 rounded-full font-bold shadow-sm transition flex justify-center items-center gap-2">
                                 <i class="fa-brands fa-line text-xl"></i> Contact on LINE
                             </a>
+                            
+                            <!-- Email -->
                             <a href={emailUrl} class="w-full bg-gray-600 hover:bg-gray-700 text-white text-center py-3 rounded-full font-bold shadow-sm transition flex justify-center items-center gap-2">
                                 <i class="fa-regular fa-envelope text-xl"></i> Contact via Email
                             </a>
