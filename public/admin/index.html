@@ -5,555 +5,256 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JOB CONNECTIONS Content Manager</title>
     <style>
-      /* ===== 日本語ベース項目・共通黄色系タグ（適度な視認性・統一デザイン） ===== */
-      .jp-base-badge {
+      /* ==========================================================
+         日本語連動項目：黄色インフォアイコン ＆ 吹き出しツールチップ
+         ========================================================== */
+
+      /* 対象項目のヘッダー設定 */
+      :is(
+        [data-key-path="jobCategory"],
+        [data-key-path="employmentType"],
+        [data-key-path="status"],
+        [data-key-path="prefecture"],
+        [data-key-path="salaryType"],
+        [data-key-path="salaryAmount"],
+        [data-key-path="salaryUpperLimit"],
+        [data-key-path="japaneseSpeaking"],
+        [data-key-path="japaneseReading"],
+        [data-key-path="japaneseWriting"],
+        [data-key-path="japaneseJlpt"],
+        [data-key-path="requiredInfo"],
+        [data-key-path="requirePhone"],
+        [data-key-path="applicationPhone"],
+        [data-key-path="datePosted"],
+        [data-key-path="validThrough"]
+      ) > header {
+        position: relative !important;
+        overflow: visible !important;
+      }
+
+      :is(
+        [data-key-path="jobCategory"],
+        [data-key-path="employmentType"],
+        [data-key-path="status"],
+        [data-key-path="prefecture"],
+        [data-key-path="salaryType"],
+        [data-key-path="salaryAmount"],
+        [data-key-path="salaryUpperLimit"],
+        [data-key-path="japaneseSpeaking"],
+        [data-key-path="japaneseReading"],
+        [data-key-path="japaneseWriting"],
+        [data-key-path="japaneseJlpt"],
+        [data-key-path="requiredInfo"],
+        [data-key-path="requirePhone"],
+        [data-key-path="applicationPhone"],
+        [data-key-path="datePosted"],
+        [data-key-path="validThrough"]
+      ) > header h4 {
         display: inline-flex !important;
         align-items: center !important;
-        gap: 5px !important;
-        font-size: 11px !important;
-        font-weight: 600 !important;
-        line-height: 1.3 !important;
-        padding: 3px 8px !important;
-        border-radius: 4px !important;
-        margin-bottom: 6px !important;
-        width: fit-content !important;
-        box-sizing: border-box !important;
-        pointer-events: auto !important;
-        user-select: none !important;
-        /* ダークモード/通常共通の落ち着いたウォームゴールド・イエロー */
-        background: rgba(245, 158, 11, 0.15) !important;
-        border: 1px solid rgba(245, 158, 11, 0.4) !important;
-        color: #fbbf24 !important;
-        letter-spacing: 0.02em !important;
-      }
-
-      /* ライトテーマでの視認性調整 */
-      @media (prefers-color-scheme: light) {
-        :root:not([class*="dark"]):not([data-theme="dark"]) .jp-base-badge {
-          background: #fef9c3 !important;
-          border: 1px solid #fde047 !important;
-          color: #854d0e !important;
-        }
-      }
-
-      /* 日本語ペインでのタグ（マスター表示） */
-      .jp-badge-ja {
-        /* 黄色系共通ベース */
-      }
-
-      /* 日本語以外（英語・ポルトガル語）でのロック表示タグ */
-      .jp-badge-locked {
-        /* 黄色系共通ベース */
-      }
-
-      /* 日本語以外（英語・ポルトガル語）でのコンテナロック（入力不可・グレーアウト） */
-      .jp-locked-container {
         position: relative !important;
-        opacity: 0.65 !important;
-        cursor: not-allowed !important;
-        background: rgba(245, 158, 11, 0.03) !important;
-        border: 1px dashed rgba(245, 158, 11, 0.3) !important;
-        border-radius: 6px !important;
-        padding: 6px 8px !important;
-        margin-bottom: 6px !important;
-        transition: opacity 0.2s ease !important;
+        overflow: visible !important;
+        cursor: help !important;
       }
 
-      /* ロックコンテナ内の全インタラクティブ要素の操作不可設定 */
-      .jp-locked-container input,
-      .jp-locked-container select,
-      .jp-locked-container textarea,
-      .jp-locked-container button,
-      .jp-locked-container [role="radio"],
-      .jp-locked-container [role="combobox"],
-      .jp-locked-container [role="switch"],
-      .jp-locked-container label {
-        pointer-events: none !important;
-        cursor: not-allowed !important;
+      /* 1. 黄色のインフォアイコン (::after) */
+      :is(
+        [data-key-path="jobCategory"],
+        [data-key-path="employmentType"],
+        [data-key-path="status"],
+        [data-key-path="prefecture"],
+        [data-key-path="salaryType"],
+        [data-key-path="salaryAmount"],
+        [data-key-path="salaryUpperLimit"],
+        [data-key-path="japaneseSpeaking"],
+        [data-key-path="japaneseReading"],
+        [data-key-path="japaneseWriting"],
+        [data-key-path="japaneseJlpt"],
+        [data-key-path="requiredInfo"],
+        [data-key-path="requirePhone"],
+        [data-key-path="applicationPhone"],
+        [data-key-path="datePosted"],
+        [data-key-path="validThrough"]
+      ) > header h4::after {
+        content: "ℹ";
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        margin-left: 8px;
+        border-radius: 50%;
+        font-size: 11px;
+        font-weight: 800;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1;
+        /* 黄色・ゴールドの配色 */
+        color: #b45309;
+        background: #fef3c7;
+        border: 1.5px solid #f59e0b;
+        box-shadow: 0 1px 3px rgba(245, 158, 11, 0.25);
+        vertical-align: middle;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: auto;
+      }
+
+      /* アイコンホバー時の強調効果 */
+      :is(
+        [data-key-path="jobCategory"],
+        [data-key-path="employmentType"],
+        [data-key-path="status"],
+        [data-key-path="prefecture"],
+        [data-key-path="salaryType"],
+        [data-key-path="salaryAmount"],
+        [data-key-path="salaryUpperLimit"],
+        [data-key-path="japaneseSpeaking"],
+        [data-key-path="japaneseReading"],
+        [data-key-path="japaneseWriting"],
+        [data-key-path="japaneseJlpt"],
+        [data-key-path="requiredInfo"],
+        [data-key-path="requirePhone"],
+        [data-key-path="applicationPhone"],
+        [data-key-path="datePosted"],
+        [data-key-path="validThrough"]
+      ) > header h4:hover::after {
+        background: #fde68a;
+        border-color: #d97706;
+        color: #78350f;
+        transform: scale(1.15);
+        box-shadow: 0 2px 6px rgba(217, 119, 6, 0.4);
+      }
+
+      /* 2. 吹き出し（ツールチップ）本体 (::before) */
+      :is(
+        [data-key-path="jobCategory"],
+        [data-key-path="employmentType"],
+        [data-key-path="status"],
+        [data-key-path="prefecture"],
+        [data-key-path="salaryType"],
+        [data-key-path="salaryAmount"],
+        [data-key-path="salaryUpperLimit"],
+        [data-key-path="japaneseSpeaking"],
+        [data-key-path="japaneseReading"],
+        [data-key-path="japaneseWriting"],
+        [data-key-path="japaneseJlpt"],
+        [data-key-path="requiredInfo"],
+        [data-key-path="requirePhone"],
+        [data-key-path="applicationPhone"],
+        [data-key-path="datePosted"],
+        [data-key-path="validThrough"]
+      ) > header h4::before {
+        content: "🇯🇵 日本語連動：日本語（ja）で設定した内容が全言語に自動反映されます";
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 0;
+        transform: translateY(4px);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.4;
+        white-space: nowrap;
+        color: #ffffff;
+        background: #0f172a;
+        border: 1px solid #f59e0b;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+        z-index: 99999;
+      }
+
+      /* ホバー時に吹き出しを表示 */
+      :is(
+        [data-key-path="jobCategory"],
+        [data-key-path="employmentType"],
+        [data-key-path="status"],
+        [data-key-path="prefecture"],
+        [data-key-path="salaryType"],
+        [data-key-path="salaryAmount"],
+        [data-key-path="salaryUpperLimit"],
+        [data-key-path="japaneseSpeaking"],
+        [data-key-path="japaneseReading"],
+        [data-key-path="japaneseWriting"],
+        [data-key-path="japaneseJlpt"],
+        [data-key-path="requiredInfo"],
+        [data-key-path="requirePhone"],
+        [data-key-path="applicationPhone"],
+        [data-key-path="datePosted"],
+        [data-key-path="validThrough"]
+      ) > header h4:hover::before {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* 個別項目の吹き出しテキスト最適化 */
+      [data-key-path="applicationPhone"] > header h4::before {
+        content: "🇯🇵 日本語連動：数字とハイフンのみ。日本語（ja）の設定が全言語に自動反映されます";
+      }
+      [data-key-path="status"] > header h4::before {
+        content: "🇯🇵 日本語連動：公開・下書き状態は全言語共通で連動します";
+      }
+      [data-key-path="japaneseSpeaking"] > header h4::before,
+      [data-key-path="japaneseReading"] > header h4::before,
+      [data-key-path="japaneseWriting"] > header h4::before,
+      [data-key-path="japaneseJlpt"] > header h4::before {
+        content: "🇯🇵 日本語連動：日本語（ja）で選択した能力要件が全言語に自動反映されます";
+      }
+
+      /* ダークテーマ時の微調整 */
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) :is(
+          [data-key-path="jobCategory"],
+          [data-key-path="employmentType"],
+          [data-key-path="status"],
+          [data-key-path="prefecture"],
+          [data-key-path="salaryType"],
+          [data-key-path="salaryAmount"],
+          [data-key-path="salaryUpperLimit"],
+          [data-key-path="japaneseSpeaking"],
+          [data-key-path="japaneseReading"],
+          [data-key-path="japaneseWriting"],
+          [data-key-path="japaneseJlpt"],
+          [data-key-path="requiredInfo"],
+          [data-key-path="requirePhone"],
+          [data-key-path="applicationPhone"],
+          [data-key-path="datePosted"],
+          [data-key-path="validThrough"]
+        ) > header h4::after {
+          background: rgba(245, 158, 11, 0.2);
+          border-color: #f59e0b;
+          color: #fbbf24;
+        }
+
+        :root:not([data-theme="light"]) :is(
+          [data-key-path="jobCategory"],
+          [data-key-path="employmentType"],
+          [data-key-path="status"],
+          [data-key-path="prefecture"],
+          [data-key-path="salaryType"],
+          [data-key-path="salaryAmount"],
+          [data-key-path="salaryUpperLimit"],
+          [data-key-path="japaneseSpeaking"],
+          [data-key-path="japaneseReading"],
+          [data-key-path="japaneseWriting"],
+          [data-key-path="japaneseJlpt"],
+          [data-key-path="requiredInfo"],
+          [data-key-path="requirePhone"],
+          [data-key-path="applicationPhone"],
+          [data-key-path="datePosted"],
+          [data-key-path="validThrough"]
+        ) > header h4:hover::after {
+          background: rgba(245, 158, 11, 0.35);
+          color: #fde68a;
+        }
       }
     </style>
   </head>
   <body>
     <!-- Sveltia CMS の読み込み -->
-    <script type="module" src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
-
-    <!-- 日本語マスター制御＆日本語以外入力不可・自動連動スクリプト -->
-    <script>
-      (function() {
-        // ===== 日本語をベース（マスター）とする入力項目一覧 =====
-        const JP_BASE_CONFIGS = [
-          // 1. 日本語能力要件
-          {
-            key: 'speaking',
-            labelMatch: t => t.includes('会話') || t.includes('Speaking'),
-            type: 'radio',
-            options: ['問わない', '挨拶・簡単な指示', '日常会話', 'ビジネス']
-          },
-          {
-            key: 'reading',
-            labelMatch: t => t.includes('読み') || t.includes('Reading'),
-            type: 'radio',
-            options: ['問わない', 'ひらがな・カタカナ', '簡単な漢字', '一般的な文書']
-          },
-          {
-            key: 'writing',
-            labelMatch: t => t.includes('書き') || t.includes('Writing'),
-            type: 'radio',
-            options: ['問わない', 'ひらがな・カタカナ', '簡単なメモ', 'ビジネスメール']
-          },
-          {
-            key: 'jlpt',
-            labelMatch: t => t.includes('JLPT'),
-            type: 'combobox',
-            options: ['問わない', 'N5以上', 'N4以上', 'N3以上', 'N2以上', 'N1以上']
-          },
-          // 2. 応募・選考共通項目
-          {
-            key: 'requiredInfo',
-            labelMatch: t => t.includes('応募必要項目'),
-            type: 'radio',
-            options: ['氏名・連絡先のみ', '基本情報', '基本情報 + 職務経歴']
-          },
-          {
-            key: 'requirePhone',
-            labelMatch: t => t.includes('電話番号を入力必須'),
-            type: 'boolean'
-          },
-          {
-            key: 'applicationPhone',
-            labelMatch: t => t.includes('応募受付の電話番号'),
-            type: 'text'
-          },
-          // 3. その他基本設定・条件（全言語共通/日本語準拠）
-          {
-            key: 'jobCategory',
-            labelMatch: t => t.includes('職種区分'),
-            type: 'select'
-          },
-          {
-            key: 'employmentType',
-            labelMatch: t => t.includes('雇用形態'),
-            type: 'multi_select'
-          },
-          {
-            key: 'status',
-            labelMatch: t => t.includes('ステータス'),
-            type: 'select'
-          },
-          {
-            key: 'prefecture',
-            labelMatch: t => t.includes('勤務地（都道府県）') || t.includes('都道府県'),
-            type: 'select'
-          },
-          {
-            key: 'salaryType',
-            labelMatch: t => t.includes('給与種別'),
-            type: 'select'
-          },
-          {
-            key: 'salaryAmount',
-            labelMatch: t => t.includes('給与金額（下限）'),
-            type: 'text'
-          },
-          {
-            key: 'salaryUpperLimit',
-            labelMatch: t => t.includes('給与金額（上限）'),
-            type: 'text'
-          },
-          {
-            key: 'image',
-            labelMatch: t => t.includes('メイン画像'),
-            type: 'other'
-          },
-          {
-            key: 'datePosted',
-            labelMatch: t => t.includes('掲載日') && !t.includes('終了'),
-            type: 'other'
-          },
-          {
-            key: 'validThrough',
-            labelMatch: t => t.includes('掲載終了日'),
-            type: 'other'
-          }
-        ];
-
-        // 日本語（ja）マスターから同期する最新値キャッシュ
-        const syncedValues = {};
-        let isSyncing = false;
-
-        // ペインまたはタブのロケール判定（ja / en / pt-br）
-        function getPaneLocale(paneEl) {
-          if (!paneEl) return null;
-
-          // 1. aria-label (例: Edit Japanese Content, Edit English Content, Edit Portuguese Content)
-          const ariaLabel = (paneEl.getAttribute('aria-label') || '').toLowerCase();
-          if (ariaLabel.includes('japan')) return 'ja';
-          if (ariaLabel.includes('english')) return 'en';
-          if (ariaLabel.includes('portug')) return 'pt-br';
-
-          // 2. ペイン内部の選択中ラジオ (Switch Locale)
-          const checkedInPane = paneEl.querySelector('[role="radiogroup"] [role="radio"][aria-checked="true"], [role="radiogroup"] [aria-selected="true"], fieldset input[type="radio"]:checked');
-          if (checkedInPane) {
-            const text = (checkedInPane.textContent || checkedInPane.value || '').toLowerCase();
-            if (text.includes('japan')) return 'ja';
-            if (text.includes('english')) return 'en';
-            if (text.includes('portug')) return 'pt-br';
-          }
-
-          // 3. 全体のアクティブタブ (単一ペイン表示時)
-          const activeTab = document.querySelector('[role="tab"][aria-selected="true"], [role="radiogroup"] [role="radio"][aria-checked="true"]');
-          if (activeTab) {
-            const text = (activeTab.textContent || '').toLowerCase();
-            if (text.includes('japan')) return 'ja';
-            if (text.includes('english')) return 'en';
-            if (text.includes('portug')) return 'pt-br';
-          }
-
-          return null;
-        }
-
-        // ペイン内の指定フィールドコンテナを取得
-        function getFieldContainer(pane, config) {
-          const allLabels = pane.querySelectorAll('label, [role="heading"], legend, span, div');
-          for (const el of allLabels) {
-            const text = el.textContent || '';
-            if (el.children.length <= 2 && config.labelMatch(text)) {
-              let curr = el;
-              while (curr && curr !== pane) {
-                if (curr.querySelector('[role="radio"], input, [role="combobox"], select, button, [role="switch"]')) {
-                  // 他のキーの重複を防ぐ
-                  const otherConfigs = JP_BASE_CONFIGS.filter(c => c !== config);
-                  const hasOther = otherConfigs.some(c => c.labelMatch(curr.textContent || ''));
-                  if (!hasOther) {
-                    return curr;
-                  }
-                }
-                curr = curr.parentElement;
-              }
-            }
-          }
-          return null;
-        }
-
-        // コンテナから現在値を取得
-        function getContainerValue(container, config) {
-          if (!container) return null;
-
-          if (config.type === 'combobox') {
-            const combobox = container.querySelector('[role="combobox"], button');
-            if (combobox) {
-              const text = (combobox.textContent || '').trim();
-              if (config.options) {
-                const matched = config.options.find(opt => text.includes(opt));
-                if (matched) return matched;
-              }
-              return text;
-            }
-            const select = container.querySelector('select');
-            if (select) return select.value;
-          } else if (config.type === 'radio') {
-            const checkedRadio = container.querySelector('input[type="radio"]:checked, [role="radio"][aria-checked="true"]');
-            if (checkedRadio) {
-              const parent = checkedRadio.closest('label') || checkedRadio.parentElement || checkedRadio;
-              const text = (checkedRadio.value || parent.textContent || '').trim();
-              if (config.options) {
-                const matched = config.options.find(opt => text.includes(opt));
-                if (matched) return matched;
-              }
-              return text;
-            }
-          } else if (config.type === 'boolean') {
-            const switchEl = container.querySelector('[role="switch"], input[type="checkbox"]');
-            if (switchEl) {
-              return switchEl.getAttribute('aria-checked') === 'true' || switchEl.checked;
-            }
-          } else if (config.type === 'text') {
-            const input = container.querySelector('input[type="text"], input[type="tel"], input[type="number"], input:not([type="radio"]):not([type="checkbox"])');
-            if (input) return input.value;
-          } else if (config.type === 'select') {
-            const select = container.querySelector('select');
-            if (select) return select.value;
-            const combobox = container.querySelector('[role="combobox"], button');
-            if (combobox) return (combobox.textContent || '').trim();
-          }
-
-          return null;
-        }
-
-        // コンテナに値を反映
-        function setContainerValue(container, config, targetValue) {
-          if (!container || targetValue === null || targetValue === undefined) return;
-
-          if (config.type === 'combobox') {
-            const combobox = container.querySelector('[role="combobox"], button');
-            if (combobox) {
-              const currentText = (combobox.textContent || '').trim();
-              if (currentText.includes(targetValue)) return;
-
-              combobox.click();
-              setTimeout(() => {
-                const options = document.querySelectorAll('[role="option"], [role="menuitem"], [role="menuitemradio"], li[role="option"]');
-                let found = false;
-                for (const opt of options) {
-                  if ((opt.textContent || '').trim() === targetValue) {
-                    opt.click();
-                    found = true;
-                    break;
-                  }
-                }
-                if (!found) combobox.click();
-              }, 120);
-              return;
-            }
-            const select = container.querySelector('select');
-            if (select && select.value !== targetValue) {
-              select.value = targetValue;
-              select.dispatchEvent(new Event('change', { bubbles: true }));
-              select.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-          } else if (config.type === 'radio') {
-            const radios = container.querySelectorAll('input[type="radio"], [role="radio"]');
-            for (const r of radios) {
-              const parent = r.closest('label') || r.parentElement || r;
-              const text = (r.value || parent.textContent || '').trim();
-              if (text.includes(targetValue) || (targetValue && targetValue.includes(text) && text.length >= 2)) {
-                const isChecked = r.checked || r.getAttribute('aria-checked') === 'true';
-                if (!isChecked) {
-                  r.click();
-                  if (r instanceof HTMLInputElement) {
-                    r.checked = true;
-                    r.dispatchEvent(new Event('change', { bubbles: true }));
-                    r.dispatchEvent(new Event('input', { bubbles: true }));
-                  }
-                }
-                break;
-              }
-            }
-          } else if (config.type === 'boolean') {
-            const switchEl = container.querySelector('[role="switch"], input[type="checkbox"]');
-            if (switchEl) {
-              const isChecked = switchEl.getAttribute('aria-checked') === 'true' || switchEl.checked;
-              if (isChecked !== targetValue) {
-                switchEl.click();
-              }
-            }
-          } else if (config.type === 'text') {
-            const input = container.querySelector('input[type="text"], input[type="tel"], input[type="number"], input:not([type="radio"]):not([type="checkbox"])');
-            if (input && input.value !== targetValue) {
-              input.value = targetValue;
-              input.dispatchEvent(new Event('input', { bubbles: true }));
-              input.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-          } else if (config.type === 'select') {
-            const select = container.querySelector('select');
-            if (select && select.value !== targetValue) {
-              select.value = targetValue;
-              select.dispatchEvent(new Event('change', { bubbles: true }));
-              select.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-          }
-        }
-
-        // 黄色バッジの設置・更新
-        function updateBadge(container, isMaster) {
-          let badge = container.querySelector('.jp-base-badge');
-          const badgeText = isMaster
-            ? '🇯🇵 日本語設定連動（全言語に自動反映）'
-            : '🔒 日本語連動（編集不可 / 日本語設定に準拠）';
-          const badgeClass = isMaster ? 'jp-badge-ja' : 'jp-badge-locked';
-
-          if (!badge) {
-            badge = document.createElement('div');
-            badge.className = 'jp-base-badge ' + badgeClass;
-            badge.textContent = badgeText;
-            const first = container.firstElementChild;
-            if (first) {
-              container.insertBefore(badge, first);
-            } else {
-              container.appendChild(badge);
-            }
-          } else {
-            if (badge.textContent !== badgeText) {
-              badge.textContent = badgeText;
-              badge.className = 'jp-base-badge ' + badgeClass;
-            }
-          }
-        }
-
-        // 日本語（ja）ペインでの設定（入力可能・マスター）
-        function setupJapaneseMaster(container, config) {
-          // ロック解除
-          if (container.classList.contains('jp-locked-container')) {
-            container.classList.remove('jp-locked-container');
-          }
-          const controls = container.querySelectorAll('input, select, textarea, button, [role="radio"], [role="combobox"], [role="switch"]');
-          controls.forEach(ctrl => {
-            ctrl.disabled = false;
-            ctrl.style.pointerEvents = 'auto';
-          });
-
-          // 黄色のマスター印を付与
-          updateBadge(container, true);
-
-          // 現在の値をキャッシュ
-          const val = getContainerValue(container, config);
-          if (val !== null && val !== undefined && val !== '') {
-            syncedValues[config.key] = val;
-          }
-        }
-
-        // 日本語以外（en, pt-br）ペインでの設定（入力不可・ロック・日本語値同期）
-        function setupNonJapaneseLocked(container, config) {
-          // ロック設定
-          if (!container.classList.contains('jp-locked-container')) {
-            container.classList.add('jp-locked-container');
-          }
-          const controls = container.querySelectorAll('input, select, textarea, button, [role="radio"], [role="combobox"], [role="switch"]');
-          controls.forEach(ctrl => {
-            ctrl.disabled = true;
-            ctrl.style.pointerEvents = 'none';
-          });
-
-          // 黄色のロック印を付与
-          updateBadge(container, false);
-
-          // 日本語マスターの値があれば反映
-          if (syncedValues[config.key] !== undefined && syncedValues[config.key] !== null) {
-            setContainerValue(container, config, syncedValues[config.key]);
-          }
-        }
-
-        // 日本語（ja）から英語・ポルトガル語ペインへ同期
-        function syncMasterToOtherLocales(config, value) {
-          if (value === undefined || value === null) return;
-          isSyncing = true;
-          try {
-            const editPanes = document.querySelectorAll('[role="group"][aria-label*="Content"], [role="group"][aria-label*="Edit"], main');
-            editPanes.forEach(pane => {
-              const locale = getPaneLocale(pane);
-              if (locale && locale !== 'ja') {
-                const container = getFieldContainer(pane, config);
-                if (container) {
-                  setContainerValue(container, config, value);
-                }
-              }
-            });
-          } finally {
-            setTimeout(() => { isSyncing = false; }, 200);
-          }
-        }
-
-        // 全ペインの巡回処理メインループ
-        function processPanes() {
-          const editPanes = document.querySelectorAll('[role="group"][aria-label*="Content"], [role="group"][aria-label*="Edit"], main');
-          if (editPanes.length === 0) return;
-
-          // まず日本語ペインの値を優先的に走査
-          editPanes.forEach(pane => {
-            const locale = getPaneLocale(pane);
-            if (locale === 'ja') {
-              JP_BASE_CONFIGS.forEach(config => {
-                const container = getFieldContainer(pane, config);
-                if (container) {
-                  setupJapaneseMaster(container, config);
-                }
-              });
-            }
-          });
-
-          // 続いて日本語以外（en, pt-br）ペインを走査・ロック・値反映
-          editPanes.forEach(pane => {
-            const locale = getPaneLocale(pane);
-            if (locale && locale !== 'ja') {
-              JP_BASE_CONFIGS.forEach(config => {
-                const container = getFieldContainer(pane, config);
-                if (container) {
-                  setupNonJapaneseLocked(container, config);
-                }
-              });
-            }
-          });
-        }
-
-        // ===== ユーザー操作イベントの監視（日本語ペインでの操作を検知して他言語へ即時同期） =====
-
-        // 1. クリック監視（ラジオ、コンボボックス、スイッチ）
-        document.addEventListener('click', (e) => {
-          if (isSyncing) return;
-          const target = e.target;
-
-          // JLPT等のドロップダウン選択
-          const option = target.closest('[role="option"], [role="menuitemradio"], [role="menuitem"], li[role="option"]');
-          if (option) {
-            const text = (option.textContent || '').trim();
-            const jlptConfig = JP_BASE_CONFIGS.find(c => c.key === 'jlpt');
-            if (jlptConfig && jlptConfig.options && jlptConfig.options.includes(text)) {
-              syncedValues.jlpt = text;
-              syncMasterToOtherLocales(jlptConfig, text);
-              return;
-            }
-          }
-
-          // 日本語ペインでのラジオボタン・トグル操作
-          const pane = target.closest('[role="group"][aria-label*="Content"], [role="group"][aria-label*="Edit"], main');
-          const locale = pane ? getPaneLocale(pane) : null;
-          if (locale === 'ja') {
-            setTimeout(() => {
-              JP_BASE_CONFIGS.forEach(config => {
-                const container = getFieldContainer(pane, config);
-                if (container && container.contains(target)) {
-                  const val = getContainerValue(container, config);
-                  if (val !== null && val !== undefined) {
-                    syncedValues[config.key] = val;
-                    syncMasterToOtherLocales(config, val);
-                  }
-                }
-              });
-            }, 60);
-          }
-        }, true);
-
-        // 2. 入力・変更監視（テキストボックス、セレクト）
-        const handleInputChange = (e) => {
-          if (isSyncing) return;
-          const target = e.target;
-          const pane = target.closest('[role="group"][aria-label*="Content"], [role="group"][aria-label*="Edit"], main');
-          const locale = pane ? getPaneLocale(pane) : null;
-
-          if (locale === 'ja') {
-            JP_BASE_CONFIGS.forEach(config => {
-              const container = getFieldContainer(pane, config);
-              if (container && container.contains(target)) {
-                const val = getContainerValue(container, config);
-                if (val !== null && val !== undefined) {
-                  syncedValues[config.key] = val;
-                  syncMasterToOtherLocales(config, val);
-                }
-              }
-            });
-          }
-        };
-
-        document.addEventListener('input', handleInputChange, true);
-        document.addEventListener('change', handleInputChange, true);
-
-        // DOM監視 & 定期実行
-        const observer = new MutationObserver(() => {
-          processPanes();
-        });
-
-        function start() {
-          observer.observe(document.body, { childList: true, subtree: true });
-          setInterval(processPanes, 500);
-          processPanes();
-        }
-
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', start);
-        } else {
-          start();
-        }
-      })();
-    </script>
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
   </body>
 </html>
+

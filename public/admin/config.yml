@@ -235,6 +235,7 @@ collections:
         required: false
         i18n: duplicate
 
+
       - label: "給与補足・福利厚生・受動喫煙防止措置など"
         name: "benefits"
         widget: "text"
@@ -268,7 +269,6 @@ collections:
         options: ["問わない", "挨拶・簡単な指示", "日常会話", "ビジネス"]
         default: "問わない"
         i18n: duplicate
-        hint: "※日本語（ja）で設定した値が全言語に自動適用されます"
 
       - label: "日本語・読み (Reading)"
         name: "japaneseReading"
@@ -276,7 +276,6 @@ collections:
         options: ["問わない", "ひらがな・カタカナ", "簡単な漢字", "一般的な文書"]
         default: "問わない"
         i18n: duplicate
-        hint: "※日本語（ja）で設定した値が全言語に自動適用されます"
 
       - label: "日本語・書き (Writing)"
         name: "japaneseWriting"
@@ -284,7 +283,6 @@ collections:
         options: ["問わない", "ひらがな・カタカナ", "簡単なメモ", "ビジネスメール"]
         default: "問わない"
         i18n: duplicate
-        hint: "※日本語（ja）で設定した値が全言語に自動適用されます"
 
       - label: "日本語・JLPT目安 (任意)"
         name: "japaneseJlpt"
@@ -292,7 +290,6 @@ collections:
         options: ["問わない", "N5以上", "N4以上", "N3以上", "N2以上", "N1以上"]
         default: "問わない"
         i18n: duplicate
-        hint: "※日本語（ja）で設定した値が全言語に自動適用されます"
 
       # ===== 応募・選考について =====
       - label: "応募必要項目"
@@ -329,7 +326,8 @@ collections:
         name: "image"
         widget: "image"
         required: false
-        i18n: duplicate
+        i18n: true
+
 
       - label: "掲載日"
         name: "datePosted"
@@ -347,3 +345,5 @@ collections:
         type: "date"
         required: false
         i18n: duplicate
+
+
