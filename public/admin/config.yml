@@ -261,34 +261,38 @@ collections:
           【休日】土日祝（会社カレンダーに準ずる）
         i18n: true
 
-      # ===== 日本語能力（維持） =====
+      # ===== 日本語能力（日本語マスター・全言語連動） =====
       - label: "日本語・会話 (Speaking)"
         name: "japaneseSpeaking"
         widget: "select"
         options: ["問わない", "挨拶・簡単な指示", "日常会話", "ビジネス"]
         default: "問わない"
-        i18n: true
+        i18n: duplicate
+        hint: "※日本語（ja）で設定した値が全言語に自動適用されます"
 
       - label: "日本語・読み (Reading)"
         name: "japaneseReading"
         widget: "select"
         options: ["問わない", "ひらがな・カタカナ", "簡単な漢字", "一般的な文書"]
         default: "問わない"
-        i18n: true
+        i18n: duplicate
+        hint: "※日本語（ja）で設定した値が全言語に自動適用されます"
 
       - label: "日本語・書き (Writing)"
         name: "japaneseWriting"
         widget: "select"
         options: ["問わない", "ひらがな・カタカナ", "簡単なメモ", "ビジネスメール"]
         default: "問わない"
-        i18n: true
+        i18n: duplicate
+        hint: "※日本語（ja）で設定した値が全言語に自動適用されます"
 
       - label: "日本語・JLPT目安 (任意)"
         name: "japaneseJlpt"
         widget: "select"
         options: ["問わない", "N5以上", "N4以上", "N3以上", "N2以上", "N1以上"]
         default: "問わない"
-        i18n: true
+        i18n: duplicate
+        hint: "※日本語（ja）で設定した値が全言語に自動適用されます"
 
       # ===== 応募・選考について =====
       - label: "応募必要項目"
