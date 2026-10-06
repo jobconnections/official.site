@@ -22,8 +22,12 @@ export async function getStaticPaths() {
 }
 
 const { job } = Astro.props;
+const { slug } = Astro.params;
 
 const siteUrl = 'https://www.jobconnections.jp';
+
+// 応募フォームURL（求人情報・必須設定パラメータ付き）
+const applyUrl = `/apply/?job=${encodeURIComponent(slug || '')}&title=${encodeURIComponent(job.data.title)}&reqInfo=${encodeURIComponent(job.data.requiredInfo || '')}&reqPhone=${job.data.requirePhone ? '1' : '0'}`;
 
 // 勤務地テキスト生成
 const locationText = job.data.locationDetail 
@@ -311,7 +315,7 @@ const emailUrl = 'mailto:info@jobconnections.jp'; // FIXME
                         
                         <div class="flex flex-col gap-4 max-w-sm mx-auto">
                             <!-- 応募フォーム -->
-                            <a href="/apply/" class="w-full bg-primary hover:bg-blue-800 text-white text-center py-4 rounded-full font-bold shadow-md transition flex justify-center items-center gap-2">
+                            <a href={applyUrl} class="w-full bg-primary hover:bg-blue-800 text-white text-center py-4 rounded-full font-bold shadow-md transition flex justify-center items-center gap-2">
                                 <i class="fa-solid fa-paper-plane"></i> フォームから応募する
                             </a>
 

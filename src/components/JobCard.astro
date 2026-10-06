@@ -43,7 +43,9 @@ const jobSlug = (idParts[0] === 'ja' || idParts[0] === 'en' || idParts[0] === 'p
   ? idParts[idParts.length - 1] 
   : idParts[0];
 
-const salaryText = `${job.data.salaryType} ${job.data.salaryAmount.toLocaleString()}${lang === 'ja' ? '円' : ' JPY'}`;
+const salaryText = job.data.salaryUpperLimit
+  ? `${job.data.salaryType} ${job.data.salaryAmount.toLocaleString()}${lang === 'ja' ? '円' : ' JPY'}〜${job.data.salaryUpperLimit.toLocaleString()}${lang === 'ja' ? '円' : ' JPY'}`
+  : `${job.data.salaryType} ${job.data.salaryAmount.toLocaleString()}${lang === 'ja' ? '円' : ' JPY'}`;
 const jobUrl = lang === 'ja' ? `/jobs/${jobSlug}/` : `/${lang}/jobs/${jobSlug}/`;
 
 // 勤務地テキスト生成
@@ -84,9 +86,16 @@ const employmentLabel = Array.isArray(job.data.employmentType)
     <div class="p-6">
         <div class="flex justify-between items-start mb-4">
             <div>
-                <span class="inline-block px-3 py-1 bg-blue-50 text-primary text-xs font-bold rounded-full mb-3">
-                    {employmentLabel}
-                </span>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span class="inline-block px-3 py-1 bg-blue-50 text-primary text-xs font-bold rounded-full">
+                        {employmentLabel}
+                    </span>
+                    {job.data.jobCategory && (
+                        <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-bold rounded-full">
+                            {job.data.jobCategory}
+                        </span>
+                    )}
+                </div>
                 <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
                     {job.data.title}
                 </h3>
@@ -108,7 +117,7 @@ const employmentLabel = Array.isArray(job.data.employmentType)
                 <i class="fa-solid fa-yen-sign w-5 text-gray-400"></i>
                 <span class="font-medium text-gray-900">{salaryText}</span>
             </div>
-            {lang !== 'ja' && speakingText && (
+            {speakingText && speakingText !== '問わない' && speakingText !== 'Not Required' && speakingText !== 'Não exigido' && (
                 <div class="flex items-center text-gray-600">
                     <i class="fa-solid fa-language w-5 text-gray-400"></i>
                     <span>{currentT.japaneseLevel}: {speakingText}</span>
@@ -118,6 +127,12 @@ const employmentLabel = Array.isArray(job.data.employmentType)
                 <i class="fa-regular fa-calendar w-5 text-gray-400"></i>
                 <span>{currentT.datePosted}: {formatDate(job.data.datePosted)}</span>
             </div>
+            {job.data.validThrough && (
+                <div class="flex items-center text-amber-700 col-span-1 sm:col-span-2">
+                    <i class="fa-regular fa-calendar-check w-5 text-amber-500"></i>
+                    <span class="text-xs font-semibold">{lang === 'ja' ? '応募締切' : lang === 'en' ? 'Deadline' : 'Prazo'}: {formatDate(job.data.validThrough)}</span>
+                </div>
+            )}
         </div>
 
         {job.data.jobFeatures && job.data.jobFeatures.length > 0 && (

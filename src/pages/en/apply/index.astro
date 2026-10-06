@@ -13,6 +13,12 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     <div class="py-12 md:py-20 bg-gray-50">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-2xl shadow-sm p-6 md:p-12 border border-gray-100">
+                <div id="target-job-banner" class="hidden mb-8 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                    <p class="text-xs font-bold text-primary mb-1">Applying for Job Opening</p>
+                    <p id="target-job-title" class="text-base font-bold text-gray-900"></p>
+                    <p id="target-job-id" class="text-xs text-gray-500 mt-0.5"></p>
+                </div>
+
                 <p class="mb-8 text-gray-600 text-center text-sm md:text-base">
                     Please fill out the form below and submit.<br>
                     We will usually contact you within 1-3 business days.
@@ -20,6 +26,9 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
                 <form name="job-application-en" method="POST" action="/en/thanks/" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" class="space-y-6">
                     <input type="hidden" name="form-name" value="job-application-en" />
+                    <!-- Job info hidden fields -->
+                    <input type="hidden" name="applied-job-id" id="applied-job-id" value="" />
+                    <input type="hidden" name="applied-job-title" id="applied-job-title" value="" />
                     <p class="hidden">
                         <label>Don’t fill this out if you're human: <input name="bot-field" /></label>
                     </p>
@@ -35,13 +44,19 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
                             <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded-md px-4 py-3 focus:ring-primary focus:border-primary" placeholder="e.g., info@example.com" />
                         </div>
                         <div>
-                            <label for="phone" class="block text-sm font-bold text-gray-700 mb-1">Phone <span class="text-xs text-gray-500 font-normal ml-2">Optional</span></label>
+                            <label for="phone" class="block text-sm font-bold text-gray-700 mb-1">
+                                Phone 
+                                <span id="phone-badge" class="text-xs text-gray-500 font-normal ml-2">Optional</span>
+                            </label>
                             <input type="tel" id="phone" name="phone" class="w-full border border-gray-300 rounded-md px-4 py-3 focus:ring-primary focus:border-primary" placeholder="e.g., +81-90-0000-0000" />
                         </div>
                     </div>
 
                     <div>
-                        <label for="resume" class="block text-sm font-bold text-gray-700 mb-1">Resume / CV <span class="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded ml-2">Required</span></label>
+                        <label for="resume" class="block text-sm font-bold text-gray-700 mb-1">
+                            Resume / CV 
+                            <span id="resume-badge" class="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded ml-2">Required</span>
+                        </label>
                         <p class="text-xs text-gray-500 mb-2">* PDF, Word, Excel etc. (Max 10MB)</p>
                         <input type="file" id="resume" name="resume" required class="w-full border border-gray-300 rounded-md px-4 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100" />
                     </div>
@@ -60,4 +75,50 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const jobId = params.get('job');
+            const jobTitle = params.get('title');
+            const reqInfo = params.get('reqInfo');
+            const reqPhone = params.get('reqPhone');
+
+            if (jobTitle || jobId) {
+                const banner = document.getElementById('target-job-banner');
+                const titleEl = document.getElementById('target-job-title');
+                const idEl = document.getElementById('target-job-id');
+                const hiddenId = document.getElementById('applied-job-id') as HTMLInputElement | null;
+                const hiddenTitle = document.getElementById('applied-job-title') as HTMLInputElement | null;
+
+                if (banner && titleEl) {
+                    banner.classList.remove('hidden');
+                    titleEl.textContent = jobTitle || 'Job Application';
+                    if (idEl && jobId) idEl.textContent = `Job ID: ${jobId}`;
+                }
+                if (hiddenId && jobId) hiddenId.value = jobId;
+                if (hiddenTitle && jobTitle) hiddenTitle.value = jobTitle;
+            }
+
+            if (reqPhone === '1') {
+                const phoneInput = document.getElementById('phone') as HTMLInputElement | null;
+                const phoneBadge = document.getElementById('phone-badge');
+                if (phoneInput) phoneInput.required = true;
+                if (phoneBadge) {
+                    phoneBadge.textContent = 'Required';
+                    phoneBadge.className = 'text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded ml-2 font-bold';
+                }
+            }
+
+            if (reqInfo === '氏名・連絡先のみ') {
+                const resumeInput = document.getElementById('resume') as HTMLInputElement | null;
+                const resumeBadge = document.getElementById('resume-badge');
+                if (resumeInput) resumeInput.required = false;
+                if (resumeBadge) {
+                    resumeBadge.textContent = 'Optional';
+                    resumeBadge.className = 'text-xs text-gray-500 font-normal ml-2';
+                }
+            }
+        });
+    </script>
 </BaseLayout>

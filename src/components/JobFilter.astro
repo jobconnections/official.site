@@ -5,14 +5,26 @@ interface Props {
 
 const { lang } = Astro.props;
 
+const categories = [
+  '営業・コールセンター', '事務・受付', '企画・マーケティング・管理', '販売・接客・サービス',
+  '飲食店・フード', '旅行・ホテル・ブライダル', 'レジャー・イベント・スポーツ', '工場・製造',
+  '軽作業・倉庫作業', '配送・物流・交通', 'ITエンジニア', '機械・電子エンジニア',
+  '医薬品・素材・化学エンジニア', 'Web・インターネット・ゲーム', 'クリエイティブ・広告・印刷',
+  '通訳', 'アパレル・インテリア専門職', '医師・コメディカル', '保育士・教員・講師',
+  '介護・福祉', '美容・理容・エステ'
+];
+
 const t = {
-    ja: {
+  ja: {
     filter: '条件で絞り込む',
     location: '勤務地',
+    category: '職種',
+    categoryAll: 'すべての職種',
     salaryType: '給与種別',
     salaryTypeOptions: ['指定なし', '時給', '日給', '月給'],
-    salaryRange: '給与額 (円以上)',
-    japaneseLevel: '日本語能力',
+    salaryMin: '下限給与 (円以上)',
+    salaryMax: '上限給与 (円以下)',
+    japaneseLevel: '日本語能力 (JLPT目安)',
     japaneseLevelOptions: ['指定なし', '問わない', 'N4以上', 'N3以上', 'N2以上', 'N1以上'],
     applyFilter: '検索する',
     clearFilter: 'クリア',
@@ -20,10 +32,13 @@ const t = {
   en: {
     filter: 'Filter Jobs',
     location: 'Location',
+    category: 'Job Category',
+    categoryAll: 'All Categories',
     salaryType: 'Salary Type',
     salaryTypeOptions: ['Any', 'Hourly', 'Daily', 'Monthly'],
-    salaryRange: 'Min Salary (JPY)',
-    japaneseLevel: 'Japanese Level',
+    salaryMin: 'Min Salary (JPY)',
+    salaryMax: 'Max Salary (JPY)',
+    japaneseLevel: 'Japanese Level (JLPT)',
     japaneseLevelOptions: ['Any', 'Not Required', 'N4+', 'N3+', 'N2+', 'N1+'],
     applyFilter: 'Search',
     clearFilter: 'Clear',
@@ -31,29 +46,41 @@ const t = {
   'pt-br': {
     filter: 'Filtrar Vagas',
     location: 'Local',
+    category: 'Categoria de Trabalho',
+    categoryAll: 'Todas as Categorias',
     salaryType: 'Tipo de Salário',
     salaryTypeOptions: ['Qualquer', 'Por Hora', 'Diário', 'Mensal'],
-    salaryRange: 'Salário Mínimo (JPY)',
-    japaneseLevel: 'Nível de Japonês',
+    salaryMin: 'Salário Mínimo (JPY)',
+    salaryMax: 'Salário Máximo (JPY)',
+    japaneseLevel: 'Nível de Japonês (JLPT)',
     japaneseLevelOptions: ['Qualquer', 'Não exigido', 'N4+', 'N3+', 'N2+', 'N1+'],
     applyFilter: 'Buscar',
     clearFilter: 'Limpar',
   }
 };
 const currentT = t[lang];
-
-const isJa = lang === 'ja';
 ---
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
     <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b border-gray-100 pb-3">
         <i class="fa-solid fa-filter text-primary"></i> {currentT.filter}
     </h3>
-    <form id="job-filter-form" class={`grid grid-cols-1 md:grid-cols-2 ${isJa ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-4`}>
+    <form id="job-filter-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <!-- 勤務地 -->
         <div>
             <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.location}</label>
             <input type="text" id="filter-location" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary" placeholder={lang === 'ja' ? '例: 四日市市' : 'Yokkaichi'} />
+        </div>
+
+        <!-- 職種 -->
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.category}</label>
+            <select id="filter-category" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                <option value="">{currentT.categoryAll}</option>
+                {categories.map(cat => (
+                    <option value={cat}>{cat}</option>
+                ))}
+            </select>
         </div>
         
         <!-- 給与種別 -->
@@ -67,27 +94,32 @@ const isJa = lang === 'ja';
             </select>
         </div>
 
-        <!-- 給与額 -->
+        <!-- 給与額（下限） -->
         <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.salaryRange}</label>
+            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.salaryMin}</label>
             <input type="number" id="filter-salary-min" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary" placeholder="0" />
         </div>
 
-        <!-- 日本語能力 (多言語のみ表示) -->
-        {!isJa && (
-            <div>
-                <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.japaneseLevel}</label>
-                <select id="filter-japanese" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary">
-                    <option value="">{currentT.japaneseLevelOptions[0]}</option>
-                    <option value="問わない">{currentT.japaneseLevelOptions[1]}</option>
-                    <option value="挨拶・簡単な指示">{lang === 'en' ? 'Basic / Greetings' : 'Básico / Saudações'}</option>
-                    <option value="日常会話">{lang === 'en' ? 'Daily Conversation' : 'Conversação Diária'}</option>
-                    <option value="ビジネス">{lang === 'en' ? 'Business / Fluent' : 'Negócios / Fluente'}</option>
-                </select>
-            </div>
-        )}
+        <!-- 給与額（上限） -->
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.salaryMax}</label>
+            <input type="number" id="filter-salary-max" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary" placeholder="0" />
+        </div>
 
-        <div class={`${isJa ? 'lg:col-span-3' : 'lg:col-span-4'} flex justify-end gap-3 mt-2`}>
+        <!-- 日本語能力 (JLPT) -->
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">{currentT.japaneseLevel}</label>
+            <select id="filter-japanese" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                <option value="">{currentT.japaneseLevelOptions[0]}</option>
+                <option value="問わない">{currentT.japaneseLevelOptions[1]}</option>
+                <option value="N4以上">{currentT.japaneseLevelOptions[2]}</option>
+                <option value="N3以上">{currentT.japaneseLevelOptions[3]}</option>
+                <option value="N2以上">{currentT.japaneseLevelOptions[4]}</option>
+                <option value="N1以上">{currentT.japaneseLevelOptions[5]}</option>
+            </select>
+        </div>
+
+        <div class="sm:col-span-2 lg:col-span-3 flex justify-end gap-3 mt-2">
             <button type="button" id="btn-clear-filter" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-md transition font-medium">
                 {currentT.clearFilter}
             </button>
@@ -99,44 +131,71 @@ const isJa = lang === 'ja';
 </div>
 
 <script>
-    // クライアントサイドフィルタリングのロジック
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('job-filter-form');
         if (!form) return;
 
         const locInput = document.getElementById('filter-location') as HTMLInputElement | null;
+        const catSelect = document.getElementById('filter-category') as HTMLSelectElement | null;
         const typeSelect = document.getElementById('filter-salary-type') as HTMLSelectElement | null;
         const minInput = document.getElementById('filter-salary-min') as HTMLInputElement | null;
+        const maxInput = document.getElementById('filter-salary-max') as HTMLInputElement | null;
         const jpSelect = document.getElementById('filter-japanese') as HTMLSelectElement | null;
         const jobCards = document.querySelectorAll('.job-card-item');
 
+        const jlptRank: Record<string, number> = {
+            '問わない': 0,
+            'N5以上': 1,
+            'N4以上': 2,
+            'N3以上': 3,
+            'N2以上': 4,
+            'N1以上': 5,
+        };
+
         const applyFilters = () => {
-            const locVal = locInput?.value.toLowerCase() || '';
+            const locVal = locInput?.value.toLowerCase().trim() || '';
+            const catVal = catSelect?.value || '';
             const typeVal = typeSelect?.value || '';
             const minVal = parseInt(minInput?.value || '0') || 0;
+            const maxVal = parseInt(maxInput?.value || '0') || 0;
             const jpVal = jpSelect?.value || '';
 
             jobCards.forEach(card => {
                 const el = card as HTMLElement;
                 const loc = (el.dataset.location || '').toLowerCase();
+                const cat = el.dataset.jobCategory || '';
                 const type = el.dataset.salaryType || '';
-                const salaryAmount = parseInt(el.dataset.salaryAmount || '0');
-                const jpSpeaking = el.dataset.japaneseSpeaking || '';
+                const salaryAmount = parseInt(el.dataset.salaryAmount || '0') || 0;
+                const salaryUpper = parseInt(el.dataset.salaryUpper || '0') || salaryAmount;
+                const jpJlpt = el.dataset.japaneseJlpt || '問わない';
 
                 let match = true;
 
                 if (locVal && !loc.includes(locVal)) match = false;
+                if (catVal && cat !== catVal) match = false;
                 if (typeVal && type !== typeVal) match = false;
-                if (minVal > 0 && salaryAmount < minVal) match = false;
-                if (jpVal && jpSpeaking !== jpVal) match = false;
+                if (minVal > 0 && salaryUpper < minVal) match = false;
+                if (maxVal > 0 && salaryAmount > maxVal) match = false;
+
+                if (jpVal) {
+                    if (jpVal === '問わない') {
+                        if (jpJlpt !== '問わない' && jpJlpt !== '') match = false;
+                    } else {
+                        const targetRank = jlptRank[jpVal] ?? 0;
+                        const cardRank = jlptRank[jpJlpt] ?? 0;
+                        // 求めるレベル以下で応募可能か、または指定ランク以上を許容
+                        if (cardRank > targetRank && cardRank !== 0) match = false;
+                    }
+                }
 
                 el.style.display = match ? 'block' : 'none';
             });
         };
 
-        const inputs = [locInput, typeSelect, minInput, jpSelect].filter(Boolean) as HTMLElement[];
+        const inputs = [locInput, catSelect, typeSelect, minInput, maxInput, jpSelect].filter(Boolean) as HTMLElement[];
         inputs.forEach(input => {
             input.addEventListener('input', applyFilters);
+            input.addEventListener('change', applyFilters);
         });
 
         document.getElementById('btn-apply-filter')?.addEventListener('click', applyFilters);

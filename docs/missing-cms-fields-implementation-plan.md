@@ -123,30 +123,32 @@ Sveltia CMS（`public/admin/config.yml`）および Astro コンテンツコレ�
    * 応募必要項目（`requiredInfo`）の案内表示（多言語対応ラベル変換）。
    * 電話応募ボタン（`applicationPhone`）の追加（Call to Apply / Ligar para Candidatar）。
 
-### フェーズ 2: 求人一覧カードおよび検索フィルタの改修（重要度：中） 【未着手】
-1. **`src/components/JobCard.astro` の改修**
-   * 給与上限（`salaryUpperLimit`）を考慮した金額テキストの表示。
-   * 職種区分（`jobCategory`）のバッジ表示。
-   * 掲載終了日（`validThrough`）の表示（設定時のみ）。
-   * 日本語版カードでも必要に応じて日本語レベルを表示。
-2. **`src/components/JobFilter.astro` および一覧ページ（`ja`, `en`, `pt-br`）の改修**
-   * 日本語版一覧に `data-japanese-speaking`, `data-job-category`, `data-salary-upper` 等の data 属性を追加。
-   * フィルタに「職種区分（`jobCategory`）」セレクトボックスを追加。
-   * フィルタに「給与上限額」の入力欄を追加。
-   * 日本語レベル選択肢（会話 vs JLPT）の整理とバグ修正。
+### フェーズ 2: 求人一覧カードおよび検索フィルタの改修（重要度：中） 【✅ 実装完了】
+1. **`src/components/JobCard.astro` の改修** 【完了】
+   * 給与上限（`salaryUpperLimit`）を考慮した金額テキストの表示（例: 「時給 1,350円〜1,650円」）。
+   * 職種区分（`jobCategory`）のバッジ表示を追加。
+   * 掲載終了日 / 応募締切（`validThrough`）の表示を追加。
+   * 日本語版カードでも「問わない」以外の日本語レベル要件を表示。
+2. **`src/components/JobFilter.astro` および一覧ページ（`ja`, `en`, `pt-br`）の改修** 【完了】
+   * 各言語の一覧ページ（`ja`, `en`, `pt-br`）で `data-job-category`, `data-salary-upper`, `data-japanese-speaking`, `data-japanese-jlpt` を漏れなく付加。
+   * フィルタに「職種区分（`jobCategory`）」セレクトボックス（21区分）を追加。
+   * フィルタに「上限給与（`salaryMax`）」の入力欄を追加。
+   * 日本語レベル選択肢を JLPT（N5〜N1）と連動する正確なフィルタロジックに改修。
 
-### フェーズ 3: 応募フォームとの連動（重要度：高） 【未着手】
-1. **応募導線における求人情報引き継ぎ**
-   * 求人詳細の「フォームから応募する」リンクに `?job=JOBID&title=...` を付加。
-2. **応募フォーム (`apply/index.astro`, `en`, `pt-br`) の動的対応**
-   * URLパラメータから求人情報を取得し、「応募先求人: ○○○○」を表示。
-   * 隠しフィールド `<input type="hidden" name="applied-job" />` に求人情報を格納。
-   * `requiredInfo` / `requirePhone` に応じた入力項目の必須属性切り替え。
+### フェーズ 3: 応募フォームとの連動（重要度：高） 【✅ 実装完了】
+1. **応募導線における求人情報引き継ぎ** 【完了】
+   * 求人詳細（全言語）の「フォームから応募する」リンクに `?job=JOBID&title=...&reqInfo=...&reqPhone=...` を付加。
+2. **応募フォーム (`apply/index.astro`, `en`, `pt-br`) の動的対応** 【完了】
+   * URLパラメータから求人情報を取得し、「ご応募いただく求人: 【JOBxxxx】求人タイトル」バナーを表示。
+   * 隠しフィールド `<input type="hidden" name="applied-job-id" />`, `<input type="hidden" name="applied-job-title" />` に求人情報を自動セット。
+   * `reqPhone === '1'` の場合に電話番号入力欄を必須（required）化し、必須バッジへ切り替え。
+   * `reqInfo === '氏名・連絡先のみ'` の場合に履歴書添付の required を解除し任意化。
 
 ---
 
 ## 5. 進捗状況
 
-* **フェーズ 1**: ✅ 実装完了（静的ビルドおよび型チェックパス確認済み）
-* **フェーズ 2**: 次回着手予定
-* **フェーズ 3**: 未着手
+* **フェーズ 1**: ✅ 実装完了（求人詳細ページの未反映項目対応）
+* **フェーズ 2**: ✅ 実装完了（求人カード・一覧検索フィルタの機能強化）
+* **フェーズ 3**: ✅ 実装完了（求人詳細と応募フォームのパラメータ連動・動的バリデーション）
+* **動作検証**: ✅ `astro check` (0 errors, 0 warnings), `astro build` (全72ページ生成成功)
